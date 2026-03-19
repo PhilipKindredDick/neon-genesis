@@ -157,7 +157,7 @@
 
   /* ─── ЭКРАН МЕНЮ РАНА ─── */
   #screen-run {
-    transform: translateX(100%);
+    transform: translateX(-100%);
     z-index: 9;
     background: var(--dark);
   }
@@ -265,7 +265,6 @@
 <div class="screen" id="screen-start">
   <div class="art-zone">
     <img src="assets/arts/start_screen.jpg" alt="NEON: GENESIS" draggable="false">
-    <div class="title">NEON:<br>GENESIS</div>
   </div>
 
   <div class="btn-zone">
@@ -352,18 +351,18 @@ document.addEventListener('touchend', e => {
   if (Math.abs(dx) < Math.abs(dy) * 1.2) return;
   if (Math.abs(dx) < 40 && velocity < 0.3) return;
 
-  if (dx < 0 && currentScreen === 'run') {
-    // ← : из меню рана → стартовый
+  if (dx > 0 && currentScreen === 'run') {
+    // → : из меню рана → стартовый (основной экран правее)
     goToStart();
-  } else if (dx > 0 && currentScreen === 'start') {
-    // → : стартовый → меню рана
+  } else if (dx < 0 && currentScreen === 'start') {
+    // ← : стартовый → меню рана (меню левее)
     goToRun();
   }
 }, { passive: true });
 
 function goToRun() {
   currentScreen = 'run';
-  startScreen.style.transform = 'translateX(-100%)';
+  startScreen.style.transform = 'translateX(100%)';
   runScreen.style.transform = 'translateX(0)';
   dotStart.classList.remove('active');
   dotRun.classList.add('active');
@@ -373,7 +372,7 @@ function goToRun() {
 function goToStart() {
   currentScreen = 'start';
   startScreen.style.transform = 'translateX(0)';
-  runScreen.style.transform = 'translateX(100%)';
+  runScreen.style.transform = 'translateX(-100%)';
   dotRun.classList.remove('active');
   dotStart.classList.add('active');
 }
