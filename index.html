@@ -1,0 +1,415 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>NEON: GENESIS</title>
+<link href="https://fonts.googleapis.com/css2?family=Zpix&display=swap" rel="stylesheet">
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  :root {
+    --neon-pink: #E91ECC;
+    --neon-purple: #A855F7;
+    --neon-blue: #3B82F6;
+    --dark: #0A0010;
+    --glass: rgba(10, 0, 20, 0.6);
+  }
+
+  html, body {
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    background: var(--dark);
+    font-family: 'Zpix', monospace;
+    touch-action: pan-y;
+  }
+
+  /* ─── ЭКРАН ─── */
+  .screen {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    transition: transform 0.45s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  }
+
+  /* ─── СТАРТОВЫЙ ЭКРАН ─── */
+  #screen-start {
+    transform: translateX(0);
+    z-index: 10;
+  }
+
+  #screen-start.swiped-left  { transform: translateX(-100%); }
+  #screen-start.swiped-right { transform: translateX(100%); }
+
+  /* ─── АРТ (верхняя зона) ─── */
+  .art-zone {
+    flex: 1;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .art-zone img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center top;
+    display: block;
+  }
+
+  /* Градиент снизу арта → плавный переход к кнопкам */
+  .art-zone::after {
+    content: '';
+    position: absolute;
+    bottom: 0; left: 0; right: 0;
+    height: 120px;
+    background: linear-gradient(to bottom, transparent, var(--dark));
+    pointer-events: none;
+  }
+
+  /* ─── ТИТР ─── */
+  .title {
+    position: absolute;
+    top: 18px;
+    left: 18px;
+    font-family: 'Zpix', monospace;
+    font-size: 28px;
+    line-height: 1.15;
+    color: var(--neon-pink);
+    text-shadow:
+      0 0 8px var(--neon-pink),
+      0 0 20px rgba(233,30,204,0.4);
+    letter-spacing: 1px;
+    pointer-events: none;
+    user-select: none;
+    z-index: 2;
+  }
+
+  /* ─── КНОПКИ (нижняя зона — большой палец) ─── */
+  .btn-zone {
+    background: var(--dark);
+    padding: 12px 16px 24px;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+  }
+
+  .btn {
+    font-family: 'Zpix', monospace;
+    font-size: 14px;
+    padding: 14px 10px;
+    border-radius: 14px;
+    border: none;
+    cursor: pointer;
+    text-align: left;
+    line-height: 1.3;
+    position: relative;
+    overflow: hidden;
+    transition:
+      transform 0.15s cubic-bezier(0.34, 1.56, 0.64, 1),
+      box-shadow 0.15s ease;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  .btn:active {
+    transform: scale(0.95);
+  }
+
+  .btn-primary {
+    background: var(--neon-pink);
+    color: #fff;
+    box-shadow: 0 0 16px rgba(233,30,204,0.5);
+  }
+  .btn-primary:active { box-shadow: 0 0 24px rgba(233,30,204,0.8); }
+
+  .btn-secondary {
+    background: rgba(168,85,247,0.15);
+    color: var(--neon-purple);
+    border: 1px solid rgba(168,85,247,0.4);
+    box-shadow: 0 0 8px rgba(168,85,247,0.2);
+  }
+  .btn-secondary:active { background: rgba(168,85,247,0.3); }
+
+  .btn-dark {
+    background: rgba(255,255,255,0.05);
+    color: rgba(255,255,255,0.5);
+    border: 1px solid rgba(255,255,255,0.1);
+  }
+  .btn-dark:active { background: rgba(255,255,255,0.1); }
+
+  /* Ripple при нажатии */
+  .btn::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(circle at var(--rx, 50%) var(--ry, 50%), rgba(255,255,255,0.25) 0%, transparent 60%);
+    opacity: 0;
+    transition: opacity 0.3s;
+  }
+  .btn.ripple::after { opacity: 1; }
+
+
+  /* ─── ЭКРАН МЕНЮ РАНА ─── */
+  #screen-run {
+    transform: translateX(100%);
+    z-index: 9;
+    background: var(--dark);
+  }
+
+  #screen-run.active { transform: translateX(0); }
+
+  .run-header {
+    padding: 48px 20px 16px;
+    border-bottom: 1px solid rgba(168,85,247,0.2);
+  }
+
+  .run-header h2 {
+    font-family: 'Zpix', monospace;
+    font-size: 13px;
+    color: var(--neon-purple);
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    opacity: 0.7;
+  }
+
+  .run-header h1 {
+    font-family: 'Zpix', monospace;
+    font-size: 22px;
+    color: #fff;
+    margin-top: 4px;
+  }
+
+  .run-list {
+    flex: 1;
+    overflow-y: auto;
+    padding: 12px 16px;
+  }
+
+  .run-item {
+    padding: 14px;
+    border-radius: 12px;
+    border: 1px solid rgba(255,255,255,0.08);
+    margin-bottom: 8px;
+    background: rgba(255,255,255,0.03);
+    color: rgba(255,255,255,0.6);
+    font-family: 'Zpix', monospace;
+    font-size: 13px;
+  }
+
+  .run-item .class { color: var(--neon-pink); font-size: 11px; }
+
+  /* ─── СТАТУС BAR ─── */
+  .status-bar {
+    position: fixed;
+    bottom: 8px;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    gap: 6px;
+    z-index: 100;
+  }
+
+  .dot {
+    width: 6px; height: 6px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.2);
+    transition: background 0.3s, transform 0.3s;
+  }
+
+  .dot.active {
+    background: var(--neon-pink);
+    transform: scale(1.4);
+    box-shadow: 0 0 6px var(--neon-pink);
+  }
+
+  /* ─── SWIPE HINT ─── */
+  .swipe-hint {
+    position: absolute;
+    bottom: 90px;
+    right: 16px;
+    font-family: 'Zpix', monospace;
+    font-size: 10px;
+    color: rgba(255,255,255,0.2);
+    writing-mode: vertical-rl;
+    letter-spacing: 1px;
+    animation: fadeHint 3s ease forwards 2s;
+    opacity: 0.6;
+  }
+
+  @keyframes fadeHint {
+    to { opacity: 0; }
+  }
+
+  /* ─── ПИНГ EASTER EGG ─── */
+  #ping {
+    position: fixed;
+    font-size: 22px;
+    pointer-events: none;
+    z-index: 999;
+    opacity: 0;
+    transition: opacity 0.3s;
+    filter: drop-shadow(0 0 8px var(--neon-pink));
+  }
+  #ping.visible { opacity: 1; }
+</style>
+</head>
+<body>
+
+<!-- Экран 0: Стартовый -->
+<div class="screen" id="screen-start">
+  <div class="art-zone">
+    <img src="assets/arts/start_screen.jpg" alt="NEON: GENESIS" draggable="false">
+    <div class="title">NEON:<br>GENESIS</div>
+  </div>
+
+  <div class="btn-zone">
+    <button class="btn btn-primary" onclick="btnClick(this, 'new_run')">
+      ../New_run
+    </button>
+    <button class="btn btn-secondary" onclick="btnClick(this, 'my_runs')">
+      ../My_runs
+    </button>
+    <button class="btn btn-secondary" onclick="btnClick(this, 'rules')">
+      ../Rules_<br>and_lore
+    </button>
+    <button class="btn btn-dark" onclick="btnClick(this, 'exit')">
+      ../EXIT
+    </button>
+  </div>
+
+  <div class="swipe-hint">← свайп →</div>
+</div>
+
+
+<!-- Экран 1: Мои раны (свайп вправо) -->
+<div class="screen" id="screen-run">
+  <div class="run-header">
+    <h2>../My_runs</h2>
+    <h1>Активные раны</h1>
+  </div>
+  <div class="run-list" id="run-list">
+    <div class="run-item">
+      <div class="class">🕸 нетраннер</div>
+      Митбот — Ран #001
+    </div>
+    <div class="run-item" style="opacity:0.4; font-style:italic; border-style:dashed;">
+      + начать новый ран
+    </div>
+  </div>
+</div>
+
+
+<!-- Индикатор экранов -->
+<div class="status-bar">
+  <div class="dot" id="dot-run"></div>
+  <div class="dot active" id="dot-start"></div>
+</div>
+
+<!-- Пинг -->
+<div id="ping">🐱</div>
+
+
+<script>
+// ─── SWIPE ENGINE ───
+const startScreen = document.getElementById('screen-start');
+const runScreen   = document.getElementById('screen-run');
+const dotStart    = document.getElementById('dot-start');
+const dotRun      = document.getElementById('dot-run');
+const pingEl      = document.getElementById('ping');
+
+let currentScreen = 'start'; // 'run' | 'start'
+let touchStartX = 0;
+let touchStartY = 0;
+let dragging = false;
+let startTime = 0;
+
+document.addEventListener('touchstart', e => {
+  touchStartX = e.touches[0].clientX;
+  touchStartY = e.touches[0].clientY;
+  startTime = Date.now();
+  dragging = false;
+}, { passive: true });
+
+document.addEventListener('touchmove', e => {
+  dragging = true;
+}, { passive: true });
+
+document.addEventListener('touchend', e => {
+  if (!dragging) return;
+
+  const dx = e.changedTouches[0].clientX - touchStartX;
+  const dy = e.changedTouches[0].clientY - touchStartY;
+  const dt = Date.now() - startTime;
+  const velocity = Math.abs(dx) / dt;
+
+  // Горизонтальный свайп (не вертикальный скролл)
+  if (Math.abs(dx) < Math.abs(dy) * 1.2) return;
+  if (Math.abs(dx) < 40 && velocity < 0.3) return;
+
+  if (dx < 0 && currentScreen === 'run') {
+    // ← : из меню рана → стартовый
+    goToStart();
+  } else if (dx > 0 && currentScreen === 'start') {
+    // → : стартовый → меню рана
+    goToRun();
+  }
+}, { passive: true });
+
+function goToRun() {
+  currentScreen = 'run';
+  startScreen.style.transform = 'translateX(-100%)';
+  runScreen.style.transform = 'translateX(0)';
+  dotStart.classList.remove('active');
+  dotRun.classList.add('active');
+  maybeShowPing();
+}
+
+function goToStart() {
+  currentScreen = 'start';
+  startScreen.style.transform = 'translateX(0)';
+  runScreen.style.transform = 'translateX(100%)';
+  dotRun.classList.remove('active');
+  dotStart.classList.add('active');
+}
+
+// ─── КНОПКИ ───
+function btnClick(btn, action) {
+  // Ripple эффект
+  btn.classList.add('ripple');
+  setTimeout(() => btn.classList.remove('ripple'), 300);
+
+  if (action === 'new_run') {
+    alert('// Инициализация нового рана...\n\n> Выбери класс, Незнакомец.');
+  } else if (action === 'my_runs') {
+    goToRun();
+  } else if (action === 'rules') {
+    alert('// RULES & LORE\n\n> Загрузка базы данных...\n> Noosphere Rising v0.1');
+  } else if (action === 'exit') {
+    if (window.Telegram?.WebApp) {
+      window.Telegram.WebApp.close();
+    }
+  }
+}
+
+// ─── ПИНГ (Easter egg) ───
+let pingTimer = null;
+function maybeShowPing() {
+  if (Math.random() > 0.3) return; // 30% шанс
+  clearTimeout(pingTimer);
+  const x = Math.random() * (window.innerWidth - 40);
+  const y = Math.random() * (window.innerHeight * 0.5);
+  pingEl.style.left = x + 'px';
+  pingEl.style.top  = y + 'px';
+  pingEl.classList.add('visible');
+  pingTimer = setTimeout(() => pingEl.classList.remove('visible'), 1200);
+}
+
+// ─── TELEGRAM WEBAPP INIT ───
+if (window.Telegram?.WebApp) {
+  window.Telegram.WebApp.ready();
+  window.Telegram.WebApp.expand();
+}
+</script>
+</body>
+</html>
