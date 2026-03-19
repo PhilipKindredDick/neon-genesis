@@ -7,13 +7,10 @@
 <meta http-equiv="pragma" content="no-cache">
 <meta http-equiv="expires" content="0">
 <title>NEON: GENESIS</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=VT323&family=Share+Tech+Mono&display=swap" rel="stylesheet">
 <style>
-  @font-face {
-    font-family: 'Zpix';
-    src: url('assets/fonts/zpix.ttf') format('truetype');
-    font-display: swap;
-  }
-
   * { margin: 0; padding: 0; box-sizing: border-box; }
 
   :root {
@@ -22,6 +19,7 @@
     --neon-blue: #3B82F6;
     --dark: #0A0010;
     --glass: rgba(10, 0, 20, 0.6);
+    --font-main: 'VT323', 'Share Tech Mono', monospace;
   }
 
   html, body {
@@ -29,7 +27,7 @@
     height: 100%;
     overflow: hidden;
     background: var(--dark);
-    font-family: 'Zpix', monospace;
+    font-family: var(--font-main);
     touch-action: pan-y;
   }
 
@@ -81,7 +79,7 @@
     position: absolute;
     top: 18px;
     left: 18px;
-    font-family: 'Zpix', monospace;
+    font-family: var(--font-main);
     font-size: 28px;
     line-height: 1.15;
     color: var(--neon-pink);
@@ -104,7 +102,7 @@
   }
 
   .btn {
-    font-family: 'Zpix', monospace;
+    font-family: var(--font-main);
     font-size: 14px;
     padding: 14px 10px;
     border-radius: 14px;
@@ -160,7 +158,7 @@
 
   /* ─── ЭКРАН МЕНЮ РАНА ─── */
   #screen-run {
-    transform: translateX(-100%);
+    transform: translateX(100%);   /* справа */
     z-index: 9;
     background: var(--dark);
   }
@@ -173,7 +171,7 @@
   }
 
   .run-header h2 {
-    font-family: 'Zpix', monospace;
+    font-family: var(--font-main);
     font-size: 13px;
     color: var(--neon-purple);
     text-transform: uppercase;
@@ -182,7 +180,7 @@
   }
 
   .run-header h1 {
-    font-family: 'Zpix', monospace;
+    font-family: var(--font-main);
     font-size: 22px;
     color: #fff;
     margin-top: 4px;
@@ -201,7 +199,7 @@
     margin-bottom: 8px;
     background: rgba(255,255,255,0.03);
     color: rgba(255,255,255,0.6);
-    font-family: 'Zpix', monospace;
+    font-family: var(--font-main);
     font-size: 13px;
   }
 
@@ -236,7 +234,7 @@
     position: absolute;
     bottom: 90px;
     right: 16px;
-    font-family: 'Zpix', monospace;
+    font-family: var(--font-main);
     font-size: 10px;
     color: rgba(255,255,255,0.2);
     writing-mode: vertical-rl;
@@ -365,8 +363,8 @@ document.addEventListener('touchend', e => {
 
 function goToRun() {
   currentScreen = 'run';
-  startScreen.style.transform = 'translateX(100%)';
-  runScreen.style.transform = 'translateX(0)';
+  startScreen.style.transform = 'translateX(-100%)'; // стартовый уходит влево
+  runScreen.style.transform = 'translateX(0)';        // меню приходит справа
   dotStart.classList.remove('active');
   dotRun.classList.add('active');
   maybeShowPing();
@@ -374,8 +372,8 @@ function goToRun() {
 
 function goToStart() {
   currentScreen = 'start';
-  startScreen.style.transform = 'translateX(0)';
-  runScreen.style.transform = 'translateX(-100%)';
+  startScreen.style.transform = 'translateX(0)';     // стартовый возвращается слева
+  runScreen.style.transform = 'translateX(100%)';    // меню уходит вправо
   dotRun.classList.remove('active');
   dotStart.classList.add('active');
 }
