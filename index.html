@@ -60,6 +60,8 @@
     flex: 1;
     position: relative;
     overflow: hidden;
+    min-height: 200px;             /* не схлопывается если арт не загрузился */
+    background: var(--dark);
   }
 
   .art-zone img {
@@ -101,7 +103,7 @@
   /* ─── КНОПКИ (нижняя зона — большой палец) ─── */
   .btn-zone {
     background: var(--dark);
-    padding: 12px 16px 24px;
+    padding: 12px 16px 48px;       /* 48px снизу — кнопки чуть выше */
     display: grid;
     grid-template-columns: 1fr 1fr;
     gap: 10px;
