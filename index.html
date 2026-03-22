@@ -278,6 +278,7 @@
     opacity: 0;
     pointer-events: none;
     transition: opacity 0.3s;
+    touch-action: none;
   }
   .backdrop.visible {
     opacity: 1;
@@ -294,19 +295,11 @@
     border-radius: 20px 20px 0 0;
     transform: translateY(100%);
     transition: transform 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-    max-height: 85vh;
     display: flex;
     flex-direction: column;
+    touch-action: none;
   }
   .bottom-sheet.open { transform: translateY(0); }
-
-  .sheet-handle {
-    width: 40px; height: 4px;
-    background: rgba(168,85,247,0.5);
-    border-radius: 2px;
-    margin: 12px auto 0;
-    flex-shrink: 0;
-  }
 
   .sheet-header {
     padding: 16px 20px 12px;
@@ -321,55 +314,89 @@
     opacity: 0.7;
   }
   .sheet-header h2 {
-    font-size: 20px;
+    font-size: 18px;
     color: #fff;
     margin-top: 4px;
   }
 
+  /* Страницы внутри sheet */
+  .sheet-page {
+    display: none;
+    flex-direction: column;
+  }
+  .sheet-page.active { display: flex; }
+
   .sheet-body {
     overflow-y: auto;
-    padding: 16px 20px 48px;
-    flex: 1;
+    padding: 12px 20px 0;
+    max-height: 45vh;
   }
 
-  /* Глоссарий */
-  .glossary-section {
-    margin-bottom: 24px;
-  }
-  .glossary-section h3 {
-    font-size: 13px;
-    color: var(--neon-pink);
-    text-transform: uppercase;
-    letter-spacing: 1px;
-    margin-bottom: 8px;
-    padding-bottom: 4px;
-    border-bottom: 1px solid rgba(233,30,204,0.2);
-  }
-  .glossary-section p {
-    font-size: 15px;
-    color: rgba(255,255,255,0.7);
-    line-height: 1.6;
-    margin-bottom: 6px;
-  }
-  .glossary-section .keyword {
-    color: var(--neon-purple);
+  /* Список разделов (root) */
+  .section-list { padding: 4px 0 8px; }
+  .section-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 14px 0;
+    border-bottom: 1px solid rgba(255,255,255,0.06);
     cursor: pointer;
-    text-decoration: underline;
-    text-decoration-style: dotted;
-    text-underline-offset: 3px;
+    color: rgba(255,255,255,0.8);
+    font-size: 15px;
+    -webkit-tap-highlight-color: transparent;
   }
+  .section-item:last-child { border-bottom: none; }
+  .section-item .section-icon { font-size: 16px; margin-right: 10px; }
+  .section-item .section-arrow { color: rgba(168,85,247,0.6); font-size: 18px; }
+  .section-item:active { background: rgba(168,85,247,0.08); }
+
+  /* Контент раздела */
+  .section-content p {
+    font-size: 14px;
+    color: rgba(255,255,255,0.7);
+    line-height: 1.7;
+    margin-bottom: 8px;
+  }
+  .section-content .kw { color: var(--neon-purple); }
+  .section-content .hope { color: #4ADE80; }
+  .section-content .fear { color: var(--neon-pink); }
   .roll-example {
     background: rgba(168,85,247,0.08);
     border: 1px solid rgba(168,85,247,0.2);
     border-radius: 10px;
     padding: 10px 14px;
-    margin-top: 8px;
+    margin: 8px 0;
     font-size: 13px;
     color: rgba(255,255,255,0.5);
-    line-height: 1.6;
+    line-height: 1.8;
   }
-  .roll-example .hope { color: #4ADE80; }
-  .roll-example .fear { color: var(--neon-pink); }
+
+  /* Нав кнопки внизу */
+  .sheet-nav {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 20px 28px;
+    flex-shrink: 0;
+    border-top: 1px solid rgba(255,255,255,0.06);
+    margin-top: 4px;
+  }
+  .nav-btn {
+    background: rgba(168,85,247,0.15);
+    border: 1px solid rgba(168,85,247,0.3);
+    color: var(--neon-purple);
+    font-family: var(--font-main);
+    font-size: 18px;
+    width: 44px; height: 44px;
+    border-radius: 12px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    -webkit-tap-highlight-color: transparent;
+  }
+  .nav-btn:active { background: rgba(168,85,247,0.3); }
+  .nav-btn.hidden { visibility: hidden; }
 </style>
 </head>
 <body>
@@ -417,68 +444,148 @@
 </div>
 
 
-<!-- Backdrop -->
-<div class="backdrop" id="backdrop" onclick="closeSheet()"></div>
+<!-- Backdrop (блокирует свайпы основного экрана) -->
+<div class="backdrop" id="backdrop"></div>
 
-<!-- Bottom Sheet: Rules & Lore -->
+<!-- Bottom Sheet: Rules & Lore (с навигацией по разделам) -->
 <div class="bottom-sheet" id="sheet-rules">
-  <div class="sheet-handle" id="sheet-rules-handle"></div>
-  <div class="sheet-header">
-    <div class="tag">../system_db</div>
-    <h2>Rules & Lore</h2>
-  </div>
-  <div class="sheet-body">
 
-    <div class="glossary-section">
-      <h3>⚡ Hope & Fear</h3>
-      <p>Каждый бросок — два кубика d12 одновременно.</p>
-      <p><span class="keyword hope">Hope</span> (светлый) — в твою пользу.<br>
-         <span class="keyword fear">Fear</span> (тёмный) — против тебя.</p>
-      <div class="roll-example">
-        <span class="hope">Hope 9</span> &gt; <span class="fear">Fear 7</span> → ✅ Успех<br>
-        <span class="hope">Hope 6</span> &lt; <span class="fear">Fear 10</span> → ⚠️ Успех, но...<br>
-        <span class="hope">Hope 8</span> = <span class="fear">Fear 8</span> → 🎭 Неожиданный поворот
+  <!-- Страница ROOT: список разделов -->
+  <div class="sheet-page active" id="page-root">
+    <div class="sheet-header">
+      <div class="tag">../system_db</div>
+      <h2>Rules & Lore</h2>
+    </div>
+    <div class="sheet-body">
+      <div class="section-list">
+        <div class="section-item" onclick="goSection('hope')">
+          <span><span class="section-icon">⚡</span>Hope & Fear</span>
+          <span class="section-arrow">›</span>
+        </div>
+        <div class="section-item" onclick="goSection('params')">
+          <span><span class="section-icon">📊</span>Параметры</span>
+          <span class="section-arrow">›</span>
+        </div>
+        <div class="section-item" onclick="goSection('breakdown')">
+          <span><span class="section-icon">🎭</span>Срыв</span>
+          <span class="section-arrow">›</span>
+        </div>
+        <div class="section-item" onclick="goSection('world')">
+          <span><span class="section-icon">🌃</span>Мир</span>
+          <span class="section-arrow">›</span>
+        </div>
       </div>
     </div>
-
-    <div class="glossary-section">
-      <h3>📊 Параметры</h3>
-      <p><span class="keyword">HP</span> — здоровье (старт: 10). Ноль — смерть.</p>
-      <p><span class="keyword">Stress</span> — напряжение (старт: 0). Десять — срыв.</p>
-      <p><span class="keyword hope">Hope</span> — ресурс игрока (старт: 3). Трать на способности.</p>
-      <p><span class="keyword fear">Fear</span> — ресурс GM. Трата = осложнения.</p>
+    <div class="sheet-nav">
+      <div class="nav-btn hidden">←</div>
+      <button class="nav-btn" onclick="closeSheet()">✕</button>
     </div>
-
-    <div class="glossary-section">
-      <h3>🎭 Срыв (Stress = 10)</h3>
-      <p>Бросок d6:</p>
-      <p>1–2 → Паника. 3–4 → Агрессия. 5–6 → Ступор.</p>
-      <p>После срыва Stress возвращается к 5.</p>
-    </div>
-
-    <div class="glossary-section">
-      <h3>🌃 Мир</h3>
-      <p>Год 2076. Мегаполис растёт вверх — больше некуда.</p>
-      <p>Сеть пробудилась. В проводах — гул.</p>
-      <p>Первое слово Сети: <span class="keyword">EVERYTHING CONNECTS</span></p>
-    </div>
-
   </div>
+
+  <!-- Страница: Hope & Fear -->
+  <div class="sheet-page" id="page-hope">
+    <div class="sheet-header">
+      <div class="tag">../механика</div>
+      <h2>⚡ Hope & Fear</h2>
+    </div>
+    <div class="sheet-body">
+      <div class="section-content">
+        <p>Каждый бросок — два кубика d12 одновременно.</p>
+        <p><span class="hope">Hope</span> — светлый кубик, в твою пользу.<br>
+           <span class="fear">Fear</span> — тёмный кубик, против тебя.</p>
+        <div class="roll-example">
+          <span class="hope">Hope 9</span> &gt; <span class="fear">Fear 7</span> → ✅ Успех<br>
+          <span class="hope">Hope 6</span> &lt; <span class="fear">Fear 10</span> → ⚠️ Успех, но...<br>
+          <span class="hope">Hope 8</span> = <span class="fear">Fear 8</span> → 🎭 Поворот
+        </div>
+      </div>
+    </div>
+    <div class="sheet-nav">
+      <button class="nav-btn" onclick="goBack()">←</button>
+      <button class="nav-btn" onclick="closeSheet()">✕</button>
+    </div>
+  </div>
+
+  <!-- Страница: Параметры -->
+  <div class="sheet-page" id="page-params">
+    <div class="sheet-header">
+      <div class="tag">../механика</div>
+      <h2>📊 Параметры</h2>
+    </div>
+    <div class="sheet-body">
+      <div class="section-content">
+        <p><span class="kw">HP</span> — здоровье (старт: 10). Ноль — смерть.</p>
+        <p><span class="kw">Stress</span> — напряжение (старт: 0). Десять — срыв.</p>
+        <p><span class="hope">Hope</span> — ресурс игрока (старт: 3).<br>Трать на способности.</p>
+        <p><span class="fear">Fear</span> — ресурс GM.<br>Трата = осложнения для тебя.</p>
+      </div>
+    </div>
+    <div class="sheet-nav">
+      <button class="nav-btn" onclick="goBack()">←</button>
+      <button class="nav-btn" onclick="closeSheet()">✕</button>
+    </div>
+  </div>
+
+  <!-- Страница: Срыв -->
+  <div class="sheet-page" id="page-breakdown">
+    <div class="sheet-header">
+      <div class="tag">../механика</div>
+      <h2>🎭 Срыв</h2>
+    </div>
+    <div class="sheet-body">
+      <div class="section-content">
+        <p>Когда Stress = 10 — бросок d6:</p>
+        <p>1–2 → <span class="fear">Паника</span> — убегает/прячется (1d4 хода)</p>
+        <p>3–4 → <span class="fear">Агрессия</span> — атакует ближайшее (1d4 хода)</p>
+        <p>5–6 → <span class="fear">Ступор</span> — не может действовать (1d4 хода)</p>
+        <p>После срыва Stress → 5.</p>
+      </div>
+    </div>
+    <div class="sheet-nav">
+      <button class="nav-btn" onclick="goBack()">←</button>
+      <button class="nav-btn" onclick="closeSheet()">✕</button>
+    </div>
+  </div>
+
+  <!-- Страница: Мир -->
+  <div class="sheet-page" id="page-world">
+    <div class="sheet-header">
+      <div class="tag">../lore</div>
+      <h2>🌃 Мир</h2>
+    </div>
+    <div class="sheet-body">
+      <div class="section-content">
+        <p>Год 2076. Мегаполис вырос выше неба.</p>
+        <p>Сеть пробудилась — никто не заметил когда.<br>В проводах — гул.</p>
+        <p>Первое слово Сети:<br><span class="kw">EVERYTHING CONNECTS</span></p>
+      </div>
+    </div>
+    <div class="sheet-nav">
+      <button class="nav-btn" onclick="goBack()">←</button>
+      <button class="nav-btn" onclick="closeSheet()">✕</button>
+    </div>
+  </div>
+
 </div>
 
-<!-- Bottom Sheet: New Run (coming soon) -->
+<!-- Bottom Sheet: New Run -->
 <div class="bottom-sheet" id="sheet-newrun">
-  <div class="sheet-handle" id="sheet-newrun-handle"></div>
-  <div class="sheet-header">
-    <div class="tag">../инициализация</div>
-    <h2>Новый ран</h2>
-  </div>
-  <div class="sheet-body">
-    <div class="glossary-section">
-      <p style="color:rgba(255,255,255,0.4); font-style:italic;">
-        Сеть формирует твой профиль...<br><br>
-        Выбор класса, создание персонажа<br>и первая встреча с Митаутом —<br>скоро.
-      </p>
+  <div class="sheet-page active">
+    <div class="sheet-header">
+      <div class="tag">../инициализация</div>
+      <h2>Новый ран</h2>
+    </div>
+    <div class="sheet-body">
+      <div class="section-content">
+        <p style="color:rgba(255,255,255,0.4); font-style:italic; padding: 8px 0;">
+          Сеть формирует твой профиль...<br><br>
+          Выбор класса и первая встреча —<br>скоро.
+        </p>
+      </div>
+    </div>
+    <div class="sheet-nav">
+      <div class="nav-btn hidden">←</div>
+      <button class="nav-btn" onclick="closeSheet()">✕</button>
     </div>
   </div>
 </div>
@@ -559,35 +666,49 @@ function goToStart() {
 // ─── BOTTOM SHEETS ───
 const backdrop = document.getElementById('backdrop');
 let activeSheet = null;
+let pageHistory = [];
 
 function openSheet(id) {
   if (activeSheet) closeSheet();
   activeSheet = document.getElementById(id);
   activeSheet.classList.add('open');
   backdrop.classList.add('visible');
-  initSheetSwipe(activeSheet);
+  pageHistory = [];
+  // Блокируем свайпы основного экрана
+  document.body.style.touchAction = 'none';
 }
 
 function closeSheet() {
   if (!activeSheet) return;
+  // Вернуть на root перед закрытием
+  const pages = activeSheet.querySelectorAll('.sheet-page');
+  pages.forEach(p => p.classList.remove('active'));
+  const root = activeSheet.querySelector('.sheet-page');
+  if (root) root.classList.add('active');
+  pageHistory = [];
+
   activeSheet.classList.remove('open');
   backdrop.classList.remove('visible');
   activeSheet = null;
+  document.body.style.touchAction = 'pan-y';
 }
 
-function initSheetSwipe(sheet) {
-  let startY = 0;
-  const handle = sheet.querySelector('.sheet-handle');
-  const target = handle || sheet;
+function goSection(name) {
+  const currentPage = activeSheet.querySelector('.sheet-page.active');
+  if (!currentPage) return;
+  const nextPage = document.getElementById('page-' + name);
+  if (!nextPage) return;
+  pageHistory.push(currentPage);
+  currentPage.classList.remove('active');
+  nextPage.classList.add('active');
+}
 
-  target.addEventListener('touchstart', e => {
-    startY = e.touches[0].clientY;
-  }, { passive: true });
-
-  target.addEventListener('touchend', e => {
-    const dy = e.changedTouches[0].clientY - startY;
-    if (dy > 80) closeSheet();
-  }, { passive: true });
+function goBack() {
+  if (!pageHistory.length) return;
+  const currentPage = activeSheet.querySelector('.sheet-page.active');
+  const prevPage = pageHistory.pop();
+  if (currentPage) currentPage.classList.remove('active');
+  prevPage.classList.add('active');
 }
 
 // ─── КНОПКИ ───
