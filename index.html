@@ -268,6 +268,108 @@
     filter: drop-shadow(0 0 8px var(--neon-pink));
   }
   #ping.visible { opacity: 1; }
+
+  /* ─── BACKDROP ─── */
+  .backdrop {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.6);
+    z-index: 200;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.3s;
+  }
+  .backdrop.visible {
+    opacity: 1;
+    pointer-events: all;
+  }
+
+  /* ─── BOTTOM SHEET ─── */
+  .bottom-sheet {
+    position: fixed;
+    bottom: 0; left: 0; right: 0;
+    z-index: 300;
+    background: #0D0018;
+    border-top: 1px solid rgba(168,85,247,0.4);
+    border-radius: 20px 20px 0 0;
+    transform: translateY(100%);
+    transition: transform 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    max-height: 85vh;
+    display: flex;
+    flex-direction: column;
+  }
+  .bottom-sheet.open { transform: translateY(0); }
+
+  .sheet-handle {
+    width: 40px; height: 4px;
+    background: rgba(168,85,247,0.5);
+    border-radius: 2px;
+    margin: 12px auto 0;
+    flex-shrink: 0;
+  }
+
+  .sheet-header {
+    padding: 16px 20px 12px;
+    border-bottom: 1px solid rgba(168,85,247,0.15);
+    flex-shrink: 0;
+  }
+  .sheet-header .tag {
+    font-size: 11px;
+    color: var(--neon-purple);
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    opacity: 0.7;
+  }
+  .sheet-header h2 {
+    font-size: 20px;
+    color: #fff;
+    margin-top: 4px;
+  }
+
+  .sheet-body {
+    overflow-y: auto;
+    padding: 16px 20px 48px;
+    flex: 1;
+  }
+
+  /* Глоссарий */
+  .glossary-section {
+    margin-bottom: 24px;
+  }
+  .glossary-section h3 {
+    font-size: 13px;
+    color: var(--neon-pink);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 8px;
+    padding-bottom: 4px;
+    border-bottom: 1px solid rgba(233,30,204,0.2);
+  }
+  .glossary-section p {
+    font-size: 15px;
+    color: rgba(255,255,255,0.7);
+    line-height: 1.6;
+    margin-bottom: 6px;
+  }
+  .glossary-section .keyword {
+    color: var(--neon-purple);
+    cursor: pointer;
+    text-decoration: underline;
+    text-decoration-style: dotted;
+    text-underline-offset: 3px;
+  }
+  .roll-example {
+    background: rgba(168,85,247,0.08);
+    border: 1px solid rgba(168,85,247,0.2);
+    border-radius: 10px;
+    padding: 10px 14px;
+    margin-top: 8px;
+    font-size: 13px;
+    color: rgba(255,255,255,0.5);
+    line-height: 1.6;
+  }
+  .roll-example .hope { color: #4ADE80; }
+  .roll-example .fear { color: var(--neon-pink); }
 </style>
 </head>
 <body>
@@ -314,6 +416,72 @@
   </div>
 </div>
 
+
+<!-- Backdrop -->
+<div class="backdrop" id="backdrop" onclick="closeSheet()"></div>
+
+<!-- Bottom Sheet: Rules & Lore -->
+<div class="bottom-sheet" id="sheet-rules">
+  <div class="sheet-handle" id="sheet-rules-handle"></div>
+  <div class="sheet-header">
+    <div class="tag">../system_db</div>
+    <h2>Rules & Lore</h2>
+  </div>
+  <div class="sheet-body">
+
+    <div class="glossary-section">
+      <h3>⚡ Hope & Fear</h3>
+      <p>Каждый бросок — два кубика d12 одновременно.</p>
+      <p><span class="keyword hope">Hope</span> (светлый) — в твою пользу.<br>
+         <span class="keyword fear">Fear</span> (тёмный) — против тебя.</p>
+      <div class="roll-example">
+        <span class="hope">Hope 9</span> &gt; <span class="fear">Fear 7</span> → ✅ Успех<br>
+        <span class="hope">Hope 6</span> &lt; <span class="fear">Fear 10</span> → ⚠️ Успех, но...<br>
+        <span class="hope">Hope 8</span> = <span class="fear">Fear 8</span> → 🎭 Неожиданный поворот
+      </div>
+    </div>
+
+    <div class="glossary-section">
+      <h3>📊 Параметры</h3>
+      <p><span class="keyword">HP</span> — здоровье (старт: 10). Ноль — смерть.</p>
+      <p><span class="keyword">Stress</span> — напряжение (старт: 0). Десять — срыв.</p>
+      <p><span class="keyword hope">Hope</span> — ресурс игрока (старт: 3). Трать на способности.</p>
+      <p><span class="keyword fear">Fear</span> — ресурс GM. Трата = осложнения.</p>
+    </div>
+
+    <div class="glossary-section">
+      <h3>🎭 Срыв (Stress = 10)</h3>
+      <p>Бросок d6:</p>
+      <p>1–2 → Паника. 3–4 → Агрессия. 5–6 → Ступор.</p>
+      <p>После срыва Stress возвращается к 5.</p>
+    </div>
+
+    <div class="glossary-section">
+      <h3>🌃 Мир</h3>
+      <p>Год 2076. Мегаполис растёт вверх — больше некуда.</p>
+      <p>Сеть пробудилась. В проводах — гул.</p>
+      <p>Первое слово Сети: <span class="keyword">EVERYTHING CONNECTS</span></p>
+    </div>
+
+  </div>
+</div>
+
+<!-- Bottom Sheet: New Run (coming soon) -->
+<div class="bottom-sheet" id="sheet-newrun">
+  <div class="sheet-handle" id="sheet-newrun-handle"></div>
+  <div class="sheet-header">
+    <div class="tag">../инициализация</div>
+    <h2>Новый ран</h2>
+  </div>
+  <div class="sheet-body">
+    <div class="glossary-section">
+      <p style="color:rgba(255,255,255,0.4); font-style:italic;">
+        Сеть формирует твой профиль...<br><br>
+        Выбор класса, создание персонажа<br>и первая встреча с Митаутом —<br>скоро.
+      </p>
+    </div>
+  </div>
+</div>
 
 <!-- Индикатор экранов -->
 <div class="status-bar">
@@ -388,18 +556,51 @@ function goToStart() {
   dotStart.classList.add('active');
 }
 
+// ─── BOTTOM SHEETS ───
+const backdrop = document.getElementById('backdrop');
+let activeSheet = null;
+
+function openSheet(id) {
+  if (activeSheet) closeSheet();
+  activeSheet = document.getElementById(id);
+  activeSheet.classList.add('open');
+  backdrop.classList.add('visible');
+  initSheetSwipe(activeSheet);
+}
+
+function closeSheet() {
+  if (!activeSheet) return;
+  activeSheet.classList.remove('open');
+  backdrop.classList.remove('visible');
+  activeSheet = null;
+}
+
+function initSheetSwipe(sheet) {
+  let startY = 0;
+  const handle = sheet.querySelector('.sheet-handle');
+  const target = handle || sheet;
+
+  target.addEventListener('touchstart', e => {
+    startY = e.touches[0].clientY;
+  }, { passive: true });
+
+  target.addEventListener('touchend', e => {
+    const dy = e.changedTouches[0].clientY - startY;
+    if (dy > 80) closeSheet();
+  }, { passive: true });
+}
+
 // ─── КНОПКИ ───
 function btnClick(btn, action) {
-  // Ripple эффект
   btn.classList.add('ripple');
   setTimeout(() => btn.classList.remove('ripple'), 300);
 
   if (action === 'new_run') {
-    alert('// Инициализация нового рана...\n\n> Выбери класс, Незнакомец.');
+    openSheet('sheet-newrun');
   } else if (action === 'my_runs') {
     goToRun();
   } else if (action === 'rules') {
-    alert('// RULES & LORE\n\n> Загрузка базы данных...\n> Noosphere Rising v0.1');
+    openSheet('sheet-rules');
   } else if (action === 'exit') {
     window.Telegram?.WebApp?.close();
   }
