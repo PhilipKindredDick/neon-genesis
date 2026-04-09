@@ -54,6 +54,14 @@
     transition: transform 0.45s cubic-bezier(0.25, 0.46, 0.45, 0.94);
   }
 
+  /* Стартовый — динамичный уход и возврат */
+  #screen-start.escape {
+    transition: transform 0.28s cubic-bezier(0.55, 0, 0.9, 0.5);
+  }
+  #screen-start.return {
+    transition: transform 0.55s cubic-bezier(0.34, 1.56, 0.64, 1);
+  }
+
   /* ─── СТАРТОВЫЙ ЭКРАН ─── */
   #screen-start {
     transform: translateX(0);
@@ -980,8 +988,10 @@ function closeSheet() {
   activeSheet = null;
   document.body.style.touchAction = 'pan-y';
 
-  // Если закрыли "Новый ран" — возвращаем стартовый экран
+  // Если закрыли "Новый ран" — возвращаем стартовый экран с пружиной
   if (currentScreen === 'start') {
+    startScreen.classList.remove('escape');
+    startScreen.classList.add('return');
     startScreen.style.transform = 'translateX(0)';
     dotStart.classList.add('active');
     hideNoosphere();
@@ -1046,11 +1056,12 @@ function btnClick(btn, action) {
   setTimeout(() => btn.classList.remove('ripple'), 300);
 
   if (action === 'new_run') {
-    // Скрываем стартовый экран, показываем Хугин
+    // Динамичный уход
+    startScreen.classList.remove('return');
+    startScreen.classList.add('escape');
     startScreen.style.transform = 'translateX(-100%)';
     dotStart.classList.remove('active');
     showHuginn();
-    // Sheet поверх
     openSheet('sheet-newrun');
   } else if (action === 'my_runs') {
     goToRun();
