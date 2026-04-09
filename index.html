@@ -309,12 +309,14 @@
     margin: 8px 0 0;
     opacity: 0;
     pointer-events: none;
-    animation: hintPulse 5s ease forwards 2s;
+    animation: hintCycle 12s ease infinite both;
+    animation-delay: 2s;
   }
-  @keyframes hintPulse {
+  @keyframes hintCycle {
     0%   { opacity: 0; transform: translateY(-3px); }
-    15%  { opacity: 1; transform: translateY(0); }
-    70%  { opacity: 1; }
+    8%   { opacity: 1; transform: translateY(0); }
+    35%  { opacity: 1; }
+    50%  { opacity: 0; }
     100% { opacity: 0; }
   }
 
