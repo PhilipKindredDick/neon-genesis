@@ -345,6 +345,7 @@
     background-repeat: no-repeat;
   }
   .noosphere-overlay.visible { opacity: 1; }
+  .noosphere-overlay.frozen { opacity: 0.35; filter: blur(1px); transition: opacity 0.4s, filter 0.4s; }
   #overlay-huginn { background-image: url('assets/arts/ui/Huginn.png'); }
   #overlay-muninn { background-image: url('assets/arts/ui/Muninn.png'); }
 
@@ -1011,7 +1012,7 @@
         <button class="action-btn" title="5">⑤</button>
         <button class="action-btn" title="6">⑥</button>
       </div>
-      <button class="nav-btn" onclick="closeSheet()">✕</button>
+      <button class="nav-btn" id="btn-newrun-action" onclick="closeSheet()">✕</button>
     </div>
   </div>
 </div>
@@ -1447,6 +1448,34 @@ function selectGender(btn) {
   document.querySelectorAll('.gender-btn').forEach(b => b.classList.remove('active'));
   btn.classList.add('active');
 }
+
+const btnAction = document.getElementById('btn-newrun-action');
+
+function freezeRain() {
+  rainNewRun.stop();
+  overlayHuginn.classList.add('frozen');
+  overlayMuninn.classList.add('frozen');
+  btnAction.textContent = '✓';
+  btnAction.onclick = confirmInput;
+  btnAction.style.color = 'var(--hope-color)';
+  btnAction.style.borderColor = 'rgba(74,222,128,0.5)';
+}
+
+function confirmInput() {
+  document.activeElement.blur(); // скрываем клавиатуру
+  rainNewRun.start();
+  overlayHuginn.classList.remove('frozen');
+  overlayMuninn.classList.remove('frozen');
+  btnAction.textContent = '✕';
+  btnAction.onclick = closeSheet;
+  btnAction.style.color = '';
+  btnAction.style.borderColor = '';
+}
+
+// Слушаем фокус на полях ввода
+document.querySelectorAll('.char-input').forEach(input => {
+  input.addEventListener('focus', freezeRain);
+});
 
 // ─── TELEGRAM WEBAPP INIT ───
 if (window.Telegram?.WebApp) {
