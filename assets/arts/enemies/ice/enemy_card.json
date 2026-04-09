@@ -1,0 +1,101 @@
+{
+  "id": "black_ice_apex",
+  "display_name": "Black ICE",
+  "network_handle": "../Black_ICE",
+  "type": "enemy",
+  "tier": "elite",
+  "category": "ice_program",
+  "level": 6,
+  
+  "stats": {
+    "hp": 30,
+    "attack": 8,
+    "defense": 6,
+    "speed": "fast"
+  },
+  
+  "abilities": [
+    {
+      "id": "data_strike",
+      "name": "Data Strike",
+      "description": "Мощная атака потоком данных. 8 урона.",
+      "damage": 8,
+      "cost_fear": 2
+    },
+    {
+      "id": "deck_freeze",
+      "name": "Deck Freeze",
+      "description": "Парализует деку. Игрок пропускает ход.",
+      "effect": "stun_1_turn",
+      "cost_fear": 3
+    },
+    {
+      "id": "mental_breach",
+      "name": "Mental Breach",
+      "description": "Пробивается в разум. +3 Stress.",
+      "stress_damage": 3,
+      "cost_fear": 2
+    },
+    {
+      "id": "adaptive_defense",
+      "name": "Adaptive Defense",
+      "description": "Адаптируется к атакам. +2 Defense после получения урона.",
+      "passive": true
+    }
+  ],
+  
+  "lore": {
+    "description": "Вершинный хищник Deep Net. Корпоративная защита высшего уровня. Black ICE не просто останавливает взломщиков — он их уничтожает.",
+    "first_encounter": "Ты видишь как цифры matrix rain замедляются. Воздух густеет. Что-то ОГРОМНОЕ движется в глубине. Глаза цвета neon magenta вспыхивают во тьме.",
+    "on_death": "Black ICE распадается на миллионы искр. Данные рассеиваются. Но ты знаешь — где-то в другом узле Сети уже пробуждается следующий.",
+    "origin": "Создан корпорациями для защиты самых секретных серверов. Каждый Black ICE уникален. Учится. Адаптируется. Помнит тех кто пытался его пройти."
+  },
+  
+  "tags": [
+    "elite",
+    "ice_program",
+    "deep_net",
+    "level_6",
+    "lethal",
+    "adaptive",
+    "corporate_security"
+  ],
+  
+  "encounter_conditions": {
+    "min_level": 4,
+    "locations": ["deep_net_node", "corporate_server", "black_site"],
+    "rarity": "rare",
+    "class_notes": {
+      "netrunner": "Может встретить при попытке взлома корпоративного узла уровня 5+",
+      "chrome_samurai": "В киберпространстве слаб против физических атак, но опасен ментальным уроном",
+      "theurgist": "Видит Black ICE как искажённую сущность. Может попытаться очистить вместо уничтожения"
+    }
+  },
+  
+  "visual": {
+    "art_file": "Black_ICE.png",
+    "style": "digital_dragon_apex_predator",
+    "colors": {
+      "primary": "#1a0d2e",
+      "secondary": "#ff006e",
+      "accent": "#a855f7",
+      "eyes": "#ff006e"
+    },
+    "elements": ["dragon_silhouette", "data_energy", "magenta_glow", "threatening_presence"],
+    "mood": "terrifying_beautiful"
+  },
+  
+  "gm_notes": {
+    "usage": "Black ICE - серьёзная угроза. Использовать для ключевых моментов или как испытание перед важным открытием.",
+    "difficulty": "Высокая. Может убить неподготовленного игрока.",
+    "tactics": "Адаптируется к стратегии игрока. Не повторяет одну атаку дважды подряд.",
+    "special": "Это особенный враг для братика. Может быть связан с важным сюжетным моментом?"
+  },
+  
+  "meta": {
+    "created": "2026-04-04",
+    "version": "1.0",
+    "catalog_priority": "S",
+    "special_note": "Первый враг каталога. Вершинный хищник Deep Net."
+  }
+}

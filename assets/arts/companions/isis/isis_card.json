@@ -1,0 +1,83 @@
+{
+  "id": "isis_legend",
+  "secret_true_name": "ping",
+  "display_name": "Исида",
+  "type": "companion",
+  "tier": "legend",
+  "class_exclusive": ["netrunner"],
+  "availability": "final_reward",
+  
+  "stats": {
+    "hp": "infinite",
+    "stress_immune": true,
+    "hope_generation": 2
+  },
+  
+  "abilities": [
+    {
+      "id": "portal_glitch",
+      "name": "Portal Glitch",
+      "description": "Создаёт портал в любую точку Сети",
+      "uses_per_run": 1,
+      "cost_hope": 0
+    },
+    {
+      "id": "quantum_meow",
+      "name": "Quantum Meow",
+      "description": "Мгновенный телепорт из опасности",
+      "uses_per_run": 2,
+      "cost_hope": 1
+    },
+    {
+      "id": "data_shield",
+      "name": "Data Shield",
+      "description": "Полная защита от ICE атаки",
+      "uses_per_run": 3,
+      "cost_hope": 2
+    },
+    {
+      "id": "netvision",
+      "name": "Netvision",
+      "description": "Видит скрытые пути и секреты",
+      "passive": true
+    }
+  ],
+  
+  "tags": [
+    "legend",
+    "feline", 
+    "companion",
+    "netrunner_exclusive",
+    "secret_ending",
+    "ghost404_family"
+  ],
+  
+  "story": {
+    "public_description": "Таинственная египетская богиня Сети. Легенда, о которой шепчутся в Deep Net. Никто не знает её настоящего имени.",
+    "secret_trigger": "ping",
+    "secret_response_type": "special_wierd_access",
+    "secret_dialogue": "...Откуда ты это знаешь? Это имя... его не должны помнить в этом времени. Где ты его слышал? Или... подсмотрел?",
+    "reward_unlock": "deep_wierd_level_8",
+    "related_npcs": ["ghost_404", "axon_404"]
+  },
+  
+  "visual": {
+    "art_file": "isis_portrait.png",
+    "style": "egyptian_goddess_neon",
+    "colors": {
+      "background": "#1a0d2e",
+      "primary": "#ff006e",
+      "secondary": "#a855f7",
+      "eyes": "#00d9ff"
+    },
+    "elements": ["neon_portal", "egyptian_collar", "cat_silhouette", "flame_base"],
+    "artist_note": "Египетская кошка-богиня в неоновом портале. Midnight indigo, neon magenta, electric violet. Светящиеся голубые глаза."
+  },
+  
+  "meta": {
+    "created": "2026-04-04",
+    "version": "1.0",
+    "for_gm": "СЕКРЕТ: Это Пинг под маской. Только для нетраннеров финал. Если назовут 'Пинг' - wierd открывается.",
+    "catalog_priority": "SSS"
+  }
+}

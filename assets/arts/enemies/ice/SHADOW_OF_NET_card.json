@@ -1,0 +1,93 @@
+{
+  "id": "shadow_of_net",
+  "display_name": "../SHADOW_OF_NET",
+  "type": "enemy",
+  "tier": "elite",
+  "level": 5,
+  "category": "ice_hunter",
+  
+  "stats": {
+    "hp": 25,
+    "armor": 3,
+    "damage": "3d6",
+    "speed": "fast"
+  },
+  
+  "abilities": [
+    {
+      "id": "pattern_recognition",
+      "name": "Pattern Recognition",
+      "description": "Learns player's attack pattern. +2 to defense for each repeated move.",
+      "passive": true
+    },
+    {
+      "id": "memory_strike",
+      "name": "Memory Strike",
+      "description": "Uses player's previous failed attack against them. Deals damage equal to last failed roll.",
+      "cost_fear": 2
+    },
+    {
+      "id": "shadow_morph",
+      "name": "Shadow Morph",
+      "description": "Shifts form based on encountered threats. Immune to last damage type received.",
+      "passive": true
+    }
+  ],
+  
+  "behavior": {
+    "aggro": "high",
+    "tactics": "adaptive_learner",
+    "notes": "Becomes stronger the longer the fight. Quick decisive action recommended."
+  },
+  
+  "lore": {
+    "public_description": "Вы не первый кто его встретил. Вы не последний кто его увидит. Это не просто защитная программа. Это ПАМЯТЬ Сети о том, кто пытался её сломать.",
+    "secret": "Shadow of Net - побочный эффект первого Пробуждения. Когда Сеть впервые осознала себя, она также осознала всех кто пытался её взломать. И создала защиту из этих воспоминаний.",
+    "related_to": ["first_awakening", "network_consciousness"]
+  },
+  
+  "tags": [
+    "ice",
+    "elite",
+    "adaptive",
+    "deep_net",
+    "level_5",
+    "hunter",
+    "memory_based"
+  ],
+  
+  "encounter": {
+    "spawn_locations": ["deep_net_level_4+", "corporate_servers", "restricted_nodes"],
+    "trigger": "unauthorized_access_attempt",
+    "escape_difficulty": "hard"
+  },
+  
+  "rewards": {
+    "hope_on_defeat": 3,
+    "possible_drops": [
+      "adaptive_algorithm_fragment",
+      "shadow_morph_code",
+      "network_memory_shard"
+    ]
+  },
+  
+  "visual": {
+    "art_file": "SHADOW_OF_NET.png",
+    "style": "mechanical_beast_neon",
+    "colors": {
+      "primary": "#ff006e",
+      "secondary": "#a855f7",
+      "background": "#1a0d2e"
+    },
+    "elements": ["dragon_like_form", "glowing_core", "energy_waves", "threatening_presence"],
+    "vertical_label": "../SHADOW_OF_NET"
+  },
+  
+  "meta": {
+    "created": "2026-04-04",
+    "version": "1.0",
+    "for_gm": "ОСОБЕННЫЙ враг. Адаптируется под игрока. Чем дольше бой - тем опаснее. Учит игрока быть непредсказуемым.",
+    "difficulty_rating": "hard",
+    "first_encounter_recommended": "act_1_finale"
+  }
+}

@@ -1,0 +1,149 @@
+{
+  "catalog_version": "1.2",
+  "created": "2026-04-04",
+  "updated": "2026-04-04",
+  "description": "Каталог всех игровых карточек Neon Genesis для быстрого поиска и разыгрывания",
+  "total_cards": 3,
+  
+  "categories": {
+    "companions": {
+      "count": 1,
+      "tiers": {
+        "legend": ["isis_legend"]
+      }
+    },
+    "enemies": {
+      "count": 2,
+      "levels": {
+        "5": ["shadow_of_net"],
+        "6": ["black_ice_apex"]
+      },
+      "types": {
+        "ice_hunter": ["shadow_of_net"],
+        "ice_program": ["black_ice_apex"]
+      }
+    },
+    "locations": {
+      "count": 0,
+      "types": {}
+    },
+    "events": {
+      "count": 0,
+      "tags": {}
+    }
+  },
+  
+  "cards": {
+    "isis_legend": {
+      "id": "isis_legend",
+      "name": "Исида",
+      "network_handle": "../Mystical_Cat",
+      "type": "companion",
+      "tier": "legend",
+      "file": "companions/isis/isis_card.json",
+      "art": "companions/isis/isis_portrait.png",
+      "class_exclusive": ["netrunner"],
+      "tags": ["legend", "feline", "secret_ending", "ghost404_family"],
+      "quick_stats": {
+        "hp": "∞",
+        "abilities": 4,
+        "hope_gen": 2
+      },
+      "secret": {
+        "true_name": "ping",
+        "trigger_unlocks": "deep_wierd_level_8"
+      }
+    },
+    
+    "shadow_of_net": {
+      "id": "shadow_of_net",
+      "name": "../SHADOW_OF_NET",
+      "type": "enemy",
+      "tier": "elite",
+      "level": 5,
+      "file": "enemies/ice/SHADOW_OF_NET_card.json",
+      "art": "enemies/ice/SHADOW_OF_NET.png",
+      "category": "ice_hunter",
+      "tags": ["ice", "elite", "adaptive", "deep_net", "hunter"],
+      "quick_stats": {
+        "hp": 25,
+        "armor": 3,
+        "damage": "3d6"
+      },
+      "special": {
+        "learns_patterns": true,
+        "difficulty": "hard"
+      }
+    },
+    
+    "black_ice_apex": {
+      "id": "black_ice_apex",
+      "name": "Black ICE",
+      "network_handle": "../Black_ICE",
+      "type": "enemy",
+      "tier": "elite",
+      "level": 6,
+      "file": "enemies/ice/enemy_card.json",
+      "art": "enemies/ice/Black_ICE.png",
+      "category": "ice_program",
+      "tags": ["elite", "ice_program", "deep_net", "level_6", "lethal", "adaptive", "corporate_security"],
+      "quick_stats": {
+        "hp": 30,
+        "attack": 8,
+        "defense": 6
+      },
+      "special": {
+        "adaptive_defense": true,
+        "mental_damage": true,
+        "can_stun": true,
+        "difficulty": "very_hard",
+        "note": "Первый враг каталога. Особенный для братика."
+      }
+    }
+  },
+  
+  "search_index": {
+    "by_type": {
+      "companion": ["isis_legend"],
+      "enemy": ["shadow_of_net", "black_ice_apex"]
+    },
+    "by_tier": {
+      "legend": ["isis_legend"],
+      "elite": ["shadow_of_net", "black_ice_apex"]
+    },
+    "by_class": {
+      "netrunner": ["isis_legend"]
+    },
+    "by_level": {
+      "5": ["shadow_of_net"],
+      "6": ["black_ice_apex"]
+    },
+    "by_tag": {
+      "legend": ["isis_legend"],
+      "feline": ["isis_legend"],
+      "secret_ending": ["isis_legend"],
+      "ghost404_family": ["isis_legend"],
+      "ice": ["shadow_of_net"],
+      "ice_program": ["black_ice_apex"],
+      "elite": ["shadow_of_net", "black_ice_apex"],
+      "adaptive": ["shadow_of_net", "black_ice_apex"],
+      "deep_net": ["shadow_of_net", "black_ice_apex"],
+      "hunter": ["shadow_of_net"],
+      "lethal": ["black_ice_apex"],
+      "corporate_security": ["black_ice_apex"]
+    }
+  },
+  
+  "usage_notes": {
+    "for_gm": "Призрак может искать карточки по тегам, классам, уровням. Каждая карточка имеет полное JSON описание в своей папке.",
+    "search_examples": [
+      "Найти всех companions: search_index.by_type.companion",
+      "Найти legend tier: search_index.by_tier.legend", 
+      "Найти для netrunner: search_index.by_class.netrunner",
+      "Найти врагов уровня 6: search_index.by_level.6",
+      "Найти по тегу #lethal: search_index.by_tag.lethal"
+    ],
+    "adding_new_cards": "1. Создать папку в arts/<type>/<name>/ 2. Добавить card.json и арт 3. Обновить этот каталог 4. Добавить в search_index",
+    "network_handles": "Сетевые ники отображаются слева от карточки вертикально (например: '../Mystical_Cat', '../Black_ICE')"
+  }
+}
