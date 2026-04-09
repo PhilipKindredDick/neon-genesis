@@ -462,6 +462,77 @@
   .nav-btn:active { background: rgba(168,85,247,0.3); }
   .nav-btn.hidden { visibility: hidden; }
 
+  /* ─── ФОРМА ПЕРСОНАЖА ─── */
+  .char-form {
+    margin-top: 24px;
+    padding-top: 18px;
+    border-top: 1px solid rgba(168,85,247,0.2);
+    padding-bottom: 8px;
+  }
+  .char-form-tag {
+    font-family: var(--font-main);
+    font-size: 9px;
+    color: var(--neon-purple);
+    letter-spacing: 2px;
+    opacity: 0.5;
+    text-align: center;
+    margin-bottom: 18px;
+  }
+  .char-field {
+    margin-bottom: 14px;
+  }
+  .char-field label {
+    display: block;
+    font-family: var(--font-main);
+    font-size: 10px;
+    color: var(--neon-pink);
+    letter-spacing: 1px;
+    opacity: 0.65;
+    margin-bottom: 6px;
+  }
+  .char-input {
+    width: 100%;
+    background: rgba(168,85,247,0.07);
+    border: 1px solid rgba(168,85,247,0.3);
+    border-radius: 10px;
+    padding: 10px 14px;
+    color: #fff;
+    font-family: var(--font-main);
+    font-size: 14px;
+    outline: none;
+    box-sizing: border-box;
+    -webkit-tap-highlight-color: transparent;
+    transition: border-color 0.2s, background 0.2s;
+  }
+  .char-input:focus {
+    border-color: rgba(233,30,204,0.6);
+    background: rgba(233,30,204,0.07);
+  }
+  .char-input::placeholder { color: rgba(255,255,255,0.2); }
+  .gender-row {
+    display: flex;
+    gap: 8px;
+  }
+  .gender-btn {
+    flex: 1;
+    padding: 10px 6px;
+    border-radius: 10px;
+    border: 1px solid rgba(168,85,247,0.3);
+    background: rgba(168,85,247,0.07);
+    color: rgba(255,255,255,0.4);
+    font-family: var(--font-main);
+    font-size: 13px;
+    cursor: pointer;
+    -webkit-tap-highlight-color: transparent;
+    transition: background 0.15s, border-color 0.15s, color 0.15s;
+  }
+  .gender-btn.active {
+    background: rgba(233,30,204,0.18);
+    border-color: var(--neon-pink);
+    color: var(--neon-pink);
+    text-shadow: 0 0 8px rgba(233,30,204,0.4);
+  }
+
   /* ─── 6 кнопок действий в nav ─── */
   .sheet-nav-actions {
     display: flex;
@@ -881,6 +952,30 @@
           Сеть формирует твой профиль...<br><br>
           Выбор класса и первая встреча —<br>скоро.
         </p>
+      </div>
+
+      <!-- Форма персонажа — появляется при скролле вниз -->
+      <div class="char-form">
+        <div class="char-form-tag">// инициализация //</div>
+
+        <div class="char-field">
+          <label>../имя</label>
+          <input class="char-input" id="char-name" type="text" placeholder="Настоящее имя" maxlength="24" autocomplete="off">
+        </div>
+
+        <div class="char-field">
+          <label>../сетевой_ник</label>
+          <input class="char-input" id="char-nick" type="text" placeholder="../позывной" maxlength="20" autocomplete="off">
+        </div>
+
+        <div class="char-field">
+          <label>../пол</label>
+          <div class="gender-row">
+            <button class="gender-btn" data-g="m" onclick="selectGender(this)">../M</button>
+            <button class="gender-btn" data-g="f" onclick="selectGender(this)">../F</button>
+            <button class="gender-btn" data-g="x" onclick="selectGender(this)">../X</button>
+          </div>
+        </div>
       </div>
     </div>
     <div class="sheet-nav">
@@ -1317,6 +1412,12 @@ function goFromEncounter() {
   muninnRain.stop();
   wiredNet.start();
   rainPanel.start();
+}
+
+// ─── ФОРМА ПЕРСОНАЖА ───
+function selectGender(btn) {
+  document.querySelectorAll('.gender-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
 }
 
 // ─── TELEGRAM WEBAPP INIT ───
