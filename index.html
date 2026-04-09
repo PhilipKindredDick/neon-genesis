@@ -309,11 +309,13 @@
     margin: 8px 0 0;
     opacity: 0;
     pointer-events: none;
-    animation: fadeHint 2.5s ease forwards 2.2s, scrollHintIn 0.5s ease forwards 2s;
+    animation: hintPulse 5s ease forwards 2s;
   }
-  @keyframes scrollHintIn {
-    from { opacity: 0; transform: translateY(-4px); }
-    to   { opacity: 1; transform: translateY(0); }
+  @keyframes hintPulse {
+    0%   { opacity: 0; transform: translateY(-3px); }
+    15%  { opacity: 1; transform: translateY(0); }
+    70%  { opacity: 1; }
+    100% { opacity: 0; }
   }
 
   /* ─── ПИНГ EASTER EGG ─── */
