@@ -299,6 +299,23 @@
     to { opacity: 0; }
   }
 
+  /* ─── SCROLL HINT (в шите) ─── */
+  .scroll-hint {
+    text-align: center;
+    font-family: var(--font-main);
+    font-size: 10px;
+    color: rgba(255,255,255,0.25);
+    letter-spacing: 2px;
+    margin: 8px 0 0;
+    opacity: 0;
+    pointer-events: none;
+    animation: fadeHint 2.5s ease forwards 2.2s, scrollHintIn 0.5s ease forwards 2s;
+  }
+  @keyframes scrollHintIn {
+    from { opacity: 0; transform: translateY(-4px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
   /* ─── ПИНГ EASTER EGG ─── */
   #ping {
     position: fixed;
@@ -954,6 +971,9 @@
         </p>
       </div>
 
+      <!-- Подсказка скролла -->
+      <div class="scroll-hint" id="scroll-hint">↓ &nbsp; листай &nbsp; ↓</div>
+
       <!-- Форма персонажа — появляется при скролле вниз -->
       <div class="char-form">
         <div class="char-form-tag">// инициализация //</div>
@@ -1176,13 +1196,17 @@ function btnClick(btn, action) {
   setTimeout(() => btn.classList.remove('ripple'), 300);
 
   if (action === 'new_run') {
-    // Динамичный уход
     startScreen.classList.remove('return');
     startScreen.classList.add('escape');
     startScreen.style.transform = 'translateX(-100%)';
     dotStart.classList.remove('active');
     showHuginn();
     openSheet('sheet-newrun');
+    // Перезапускаем анимацию hint
+    const hint = document.getElementById('scroll-hint');
+    hint.style.animation = 'none';
+    hint.offsetHeight; // reflow
+    hint.style.animation = '';
   } else if (action === 'my_runs') {
     goToRun();
   } else if (action === 'rules') {
