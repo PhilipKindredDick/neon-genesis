@@ -314,9 +314,9 @@
   }
   @keyframes hintCycle {
     0%   { opacity: 0; transform: translateY(-3px); }
-    8%   { opacity: 1; transform: translateY(0); }
-    35%  { opacity: 1; }
-    50%  { opacity: 0; }
+    9%   { opacity: 1; transform: translateY(0); }
+    24%  { opacity: 1; }
+    38%  { opacity: 0; }
     100% { opacity: 0; }
   }
 
@@ -1450,22 +1450,25 @@ function selectGender(btn) {
 }
 
 const btnAction = document.getElementById('btn-newrun-action');
+const newrunBody = document.querySelector('#sheet-newrun .sheet-body');
 
 function freezeRain() {
   rainNewRun.stop();
   overlayHuginn.classList.add('frozen');
   overlayMuninn.classList.add('frozen');
+  newrunBody.style.overflowY = 'hidden';
   btnAction.textContent = '✓';
   btnAction.onclick = confirmInput;
-  btnAction.style.color = 'var(--hope-color)';
-  btnAction.style.borderColor = 'rgba(74,222,128,0.5)';
+  btnAction.style.color = 'var(--neon-pink)';
+  btnAction.style.borderColor = 'rgba(233,30,204,0.5)';
 }
 
 function confirmInput() {
-  document.activeElement.blur(); // скрываем клавиатуру
+  document.activeElement.blur();
   rainNewRun.start();
   overlayHuginn.classList.remove('frozen');
   overlayMuninn.classList.remove('frozen');
+  newrunBody.style.overflowY = '';
   btnAction.textContent = '✕';
   btnAction.onclick = closeSheet;
   btnAction.style.color = '';
