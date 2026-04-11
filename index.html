@@ -1258,10 +1258,11 @@ function goToStart() {
 }
 
 function closeNewRun() {
-  runScreen.classList.remove('mode-newrun');
   rainNewRun.stop();
-  hideNoosphere();
-  navigateTo(runScreen, 'right', startScreen, dotRun, dotStart);
+  navigateTo(runScreen, 'right', startScreen, dotRun, dotStart, () => {
+    runScreen.classList.remove('mode-newrun');
+    hideNoosphere();
+  });
 }
 
 // ─── BOTTOM SHEETS ───
