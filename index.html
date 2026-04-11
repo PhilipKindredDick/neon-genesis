@@ -312,6 +312,27 @@
     100% { opacity: 0; width: 0px; }
   }
 
+  /* ─── TRAILING EDGE GLOW — экран проваливается в неон ─── */
+  .exit-glow-right { animation: exitGlowR 0.5s ease both; }
+  .exit-glow-left  { animation: exitGlowL 0.5s ease both; }
+
+  @keyframes exitGlowR {
+    0%   { box-shadow: none; }
+    12%  { box-shadow:  4px 0 18px var(--neon-pink),  2px 0 8px var(--neon-purple); }
+    30%  { box-shadow:  2px 0 10px var(--neon-pink); }
+    52%  { box-shadow:  7px 0 28px var(--neon-pink),  3px 0 12px var(--neon-purple), 1px 0 4px #fff; }
+    75%  { box-shadow:  3px 0 14px var(--neon-pink); }
+    100% { box-shadow: none; }
+  }
+  @keyframes exitGlowL {
+    0%   { box-shadow: none; }
+    12%  { box-shadow: -4px 0 18px var(--neon-pink), -2px 0 8px var(--neon-purple); }
+    30%  { box-shadow: -2px 0 10px var(--neon-pink); }
+    52%  { box-shadow: -7px 0 28px var(--neon-pink), -3px 0 12px var(--neon-purple), -1px 0 4px #fff; }
+    75%  { box-shadow: -3px 0 14px var(--neon-pink); }
+    100% { box-shadow: none; }
+  }
+
   /* ─── SWIPE HINT ─── */
   .swipe-hint {
     position: absolute;
@@ -1130,12 +1151,17 @@ function showEdgeGlitch(side) {
 // exitDir: 'left' | 'right' — куда уходит fromScreen
 function navigateTo(fromScreen, exitDir, toScreen, dotFrom, dotTo, afterFn) {
   currentScreen = toScreen.id.replace('screen-', '');
+  const glowClass = exitDir === 'left' ? 'exit-glow-right' : 'exit-glow-left';
+  fromScreen.classList.add(glowClass);
   fromScreen.style.transform = exitDir === 'left' ? 'translateX(-100%)' : 'translateX(100%)';
   toScreen.style.transform = 'translateX(0)';
   showEdgeGlitch(exitDir === 'left' ? 'right' : 'left');
   if (dotFrom) dotFrom.classList.remove('active');
   if (dotTo)   dotTo.classList.add('active');
-  if (afterFn) setTimeout(afterFn, 460);
+  setTimeout(() => {
+    fromScreen.classList.remove('exit-glow-right', 'exit-glow-left');
+    if (afterFn) afterFn();
+  }, 500);
 }
 
 function goToRun() {
@@ -1250,9 +1276,11 @@ function btnClick(btn, action) {
   if (action === 'new_run') {
     startScreen.classList.remove('return');
     startScreen.classList.add('escape');
+    startScreen.classList.add('exit-glow-right');
     startScreen.style.transform = 'translateX(-100%)';
     dotStart.classList.remove('active');
     showEdgeGlitch('right');
+    setTimeout(() => startScreen.classList.remove('exit-glow-right'), 500);
     showHuginn();
     openSheet('sheet-newrun');
     // Перезапускаем анимацию hint
