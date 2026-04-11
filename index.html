@@ -336,7 +336,8 @@
   }
   #seam.seam-left  { animation: seamL 0.45s cubic-bezier(0.25, 0.46, 0.45, 0.94) both; }
   #seam.seam-right { animation: seamR 0.45s cubic-bezier(0.25, 0.46, 0.45, 0.94) both; }
-  #seam.seam-fast  { animation-duration: 0.28s !important; }
+  #seam.seam-left.seam-fast  { animation: seamL 0.28s cubic-bezier(0.55, 0, 0.9, 0.5) both; }
+  #seam.seam-right.seam-fast { animation: seamR 0.28s cubic-bezier(0.55, 0, 0.9, 0.5) both; }
 
   @keyframes seamL {
     0%   { opacity: 0;   transform: translateX(100vw); }
