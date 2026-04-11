@@ -1258,10 +1258,19 @@ function goToStart() {
 }
 
 function closeNewRun() {
+  // Фиксируем панели через inline style — не зависим от класса
+  const runsPanel  = runScreen.querySelector('.runs-panel');
+  const newrunPanel = runScreen.querySelector('.newrun-panel');
+  runsPanel.style.display  = 'none';
+  newrunPanel.style.display = 'flex';
+
   rainNewRun.stop();
+  hideNoosphere(); // начинаем fade-out сразу — 0.4s, совпадает с переходом 0.45s
+
   navigateTo(runScreen, 'right', startScreen, dotRun, dotStart, () => {
     runScreen.classList.remove('mode-newrun');
-    hideNoosphere();
+    runsPanel.style.display  = '';
+    newrunPanel.style.display = '';
   });
 }
 
