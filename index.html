@@ -187,7 +187,8 @@
   #screen-run.active { transform: translateX(0); }
 
   /* Нижняя панель — 42vh, как наш bottom sheet */
-  .runs-panel {
+  .runs-panel,
+  .newrun-panel {
     position: absolute;
     bottom: 0; left: 0; right: 0;
     height: 42vh;
@@ -198,6 +199,11 @@
     flex-direction: column;
     z-index: 1;
   }
+
+  /* По умолчанию новый ран скрыт */
+  .newrun-panel { display: none; }
+  #screen-run.mode-newrun .runs-panel  { display: none; }
+  #screen-run.mode-newrun .newrun-panel { display: flex; }
 
   .run-header {
     padding: 14px 20px 10px;
@@ -847,6 +853,56 @@
       </div>
     </div>
   </div>
+
+  <!-- Панель "Новый ран" — встроена в экран, не sheet -->
+  <div class="newrun-panel" style="overflow:hidden;">
+    <canvas id="newrun-canvas" style="position:absolute;inset:0;width:100%;height:100%;pointer-events:none;z-index:0;"></canvas>
+    <div style="position:relative;z-index:1;display:flex;flex-direction:column;height:100%;">
+      <div class="sheet-header" style="flex-shrink:0;">
+        <div class="tag">../инициализация</div>
+        <h2>Новый ран</h2>
+      </div>
+      <div class="sheet-body" id="newrun-body">
+        <div class="section-content">
+          <p style="color:rgba(255,255,255,0.55);font-style:italic;padding:8px 0;text-shadow:0 0 8px rgba(233,30,204,0.4);">
+            Сеть формирует твой профиль...<br><br>
+            Выбор класса и первая встреча —<br>скоро.
+          </p>
+        </div>
+        <div class="scroll-hint" id="scroll-hint">↓ &nbsp; листай &nbsp; ↓</div>
+        <div class="char-form">
+          <div class="char-form-tag">// инициализация //</div>
+          <div class="char-field">
+            <label>../имя</label>
+            <input class="char-input" id="char-name" type="text" placeholder="Настоящее имя" maxlength="24" autocomplete="off">
+          </div>
+          <div class="char-field">
+            <label>../сетевой_ник</label>
+            <input class="char-input" id="char-nick" type="text" placeholder="../позывной" maxlength="20" autocomplete="off">
+          </div>
+          <div class="char-field">
+            <label>../пол</label>
+            <div class="gender-row">
+              <button class="gender-btn" data-g="m" onclick="selectGender(this)">../M</button>
+              <button class="gender-btn" data-g="f" onclick="selectGender(this)">../F</button>
+              <button class="gender-btn" data-g="x" onclick="selectGender(this)">../X</button>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="sheet-nav">
+        <div class="sheet-nav-actions">
+          <button class="action-btn" title="Хугин ↔ Мунин" onclick="swapNoosphere()">①</button>
+          <button class="action-btn" title="2">②</button>
+          <button class="action-btn" title="3">③</button>
+          <button class="action-btn" title="4">④</button>
+          <button class="action-btn" title="5">⑤</button>
+          <button class="action-btn" title="6">⑥</button>
+        </div>
+        <button class="nav-btn" id="btn-newrun-action" onclick="closeNewRun()">✕</button>
+      </div>
+    </div>
+  </div>
 </div>
 
 
@@ -1033,7 +1089,6 @@
 
 <!-- Bottom Sheet: New Run -->
 <div class="bottom-sheet" id="sheet-newrun" style="overflow:hidden;">
-  <canvas id="newrun-canvas" style="position:absolute;inset:0;width:100%;height:100%;border-radius:20px 20px 0 0;pointer-events:none;"></canvas>
   <div class="sheet-page active" style="position:relative;z-index:1;">
     <div class="sheet-header">
       <div class="tag">../инициализация</div>
@@ -1202,11 +1257,17 @@ function goToStart() {
   navigateTo(runScreen, 'right', startScreen, dotRun, dotStart);
 }
 
+function closeNewRun() {
+  runScreen.classList.remove('mode-newrun');
+  rainNewRun.stop();
+  hideNoosphere();
+  navigateTo(runScreen, 'right', startScreen, dotRun, dotStart);
+}
+
 // ─── BOTTOM SHEETS ───
 const backdrop = document.getElementById('backdrop');
 let activeSheet = null;
 let pageHistory = [];
-let newRunMode = false;
 
 function openSheet(id) {
   if (activeSheet) closeSheet();
@@ -1232,11 +1293,6 @@ function closeSheet() {
   activeSheet = null;
   document.body.style.touchAction = 'pan-y';
 
-  if (newRunMode) {
-    newRunMode = false;
-    hideNoosphere();
-    navigateTo(runScreen, 'right', startScreen, dotRun, dotStart);
-  }
 }
 
 function goSection(name) {
@@ -1297,11 +1353,10 @@ function btnClick(btn, action) {
   setTimeout(() => btn.classList.remove('ripple'), 300);
 
   if (action === 'new_run') {
-    newRunMode = true;
+    runScreen.classList.add('mode-newrun');
     navigateTo(startScreen, 'left', runScreen, dotStart, dotRun, () => {
       showHuginn();
-      openSheet('sheet-newrun');
-      // Перезапускаем анимацию hint
+      rainNewRun.start();
       const hint = document.getElementById('scroll-hint');
       hint.style.animation = 'none';
       hint.offsetHeight;
@@ -1371,13 +1426,10 @@ const rainPanel  = makeRain(document.getElementById('panel-canvas'));
 const rainNewRun = makeRain(document.getElementById('newrun-canvas'));
 const rainRules  = makeRain(document.getElementById('rules-canvas'));
 
-// Sheet-ы: слушаем class .open
-['sheet-newrun', 'sheet-rules'].forEach(id => {
-  const rain = id === 'sheet-newrun' ? rainNewRun : rainRules;
-  new MutationObserver(() => {
-    document.getElementById(id).classList.contains('open') ? rain.start() : rain.stop();
-  }).observe(document.getElementById(id), { attributes: true, attributeFilter: ['class'] });
-});
+// Sheet-ы: слушаем class .open (только rules теперь)
+new MutationObserver(() => {
+  document.getElementById('sheet-rules').classList.contains('open') ? rainRules.start() : rainRules.stop();
+}).observe(document.getElementById('sheet-rules'), { attributes: true, attributeFilter: ['class'] });
 
 // ─── WIRED NET (My Runs — нейросеть на весь экран) ───
 const wiredNet = (() => {
@@ -1553,7 +1605,7 @@ function selectGender(btn) {
 }
 
 const btnAction = document.getElementById('btn-newrun-action');
-const newrunBody = document.querySelector('#sheet-newrun .sheet-body');
+const newrunBody = document.getElementById('newrun-body');
 
 function freezeRain() {
   rainNewRun.stop();
