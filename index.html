@@ -1274,7 +1274,7 @@ function closeNewRun() {
     runsPanel.style.display  = '';
     newrunPanel.style.display = '';
     hideNoosphere();
-    setTimeout(() => { startScreen.style.zIndex = ''; }, 420);
+    setTimeout(() => { startScreen.style.zIndex = ''; }, 600);
   });
 }
 
@@ -1339,7 +1339,10 @@ function showMuninn() {
   overlayHuginn.classList.remove('visible');
   overlayMuninn.classList.add('visible');
 }
+let swapTimer = null;
+
 function hideNoosphere() {
+  if (swapTimer) { clearTimeout(swapTimer); swapTimer = null; }
   overlayHuginn.classList.remove('visible');
   overlayMuninn.classList.remove('visible');
 }
@@ -1355,8 +1358,8 @@ function swapNoosphere() {
     frames.forEach(f => f.classList.remove('visible'));
     frames[i].classList.add('visible');
     i++;
-    if (i < frames.length) setTimeout(tick, 110);
-    else c2.classList.add('visible');
+    if (i < frames.length) swapTimer = setTimeout(tick, 110);
+    else { c2.classList.add('visible'); swapTimer = null; }
   };
   tick();
 }
