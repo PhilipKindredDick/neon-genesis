@@ -1265,13 +1265,15 @@ function closeNewRun() {
   newrunPanel.style.display = 'flex';
 
   rainNewRun.stop();
-  hideNoosphere(); // начинаем fade-out сразу — 0.4s, совпадает с переходом 0.45s
+  hideNoosphere(); // fade-out 0.4s
 
-  navigateTo(runScreen, 'right', startScreen, dotRun, dotStart, () => {
-    runScreen.classList.remove('mode-newrun');
-    runsPanel.style.display  = '';
-    newrunPanel.style.display = '';
-  });
+  setTimeout(() => {
+    navigateTo(runScreen, 'right', startScreen, dotRun, dotStart, () => {
+      runScreen.classList.remove('mode-newrun');
+      runsPanel.style.display  = '';
+      newrunPanel.style.display = '';
+    });
+  }, 400);
 }
 
 // ─── BOTTOM SHEETS ───
