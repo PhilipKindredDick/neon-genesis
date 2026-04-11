@@ -1165,7 +1165,7 @@ function navigateTo(fromScreen, exitDir, toScreen, dotFrom, dotTo, afterFn) {
   fromScreen.classList.add(glowClass);
   fromScreen.style.transform = exitDir === 'left' ? 'translateX(-100%)' : 'translateX(100%)';
   toScreen.style.transform = 'translateX(0)';
-  showEdgeGlitch(exitDir === 'left' ? 'right' : 'left');
+  showEdgeGlitch(exitDir);
   if (dotFrom) dotFrom.classList.remove('active');
   if (dotTo)   dotTo.classList.add('active');
   if (typeof updateDotEdges === 'function') updateDotEdges();
@@ -1290,7 +1290,7 @@ function btnClick(btn, action) {
     startScreen.classList.add('exit-glow-right');
     startScreen.style.transform = 'translateX(-100%)';
     dotStart.classList.remove('active');
-    showEdgeGlitch('right');
+    showEdgeGlitch('left');
     setTimeout(() => startScreen.classList.remove('exit-glow-right'), 500);
     showHuginn();
     openSheet('sheet-newrun');
