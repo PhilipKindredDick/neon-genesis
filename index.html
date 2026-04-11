@@ -322,25 +322,33 @@
     100% { opacity: 0; width: 0px; }
   }
 
-  /* ─── TRAILING EDGE GLOW — экран проваливается в неон ─── */
-  .exit-glow-right { animation: exitGlowR 0.5s ease both; }
-  .exit-glow-left  { animation: exitGlowL 0.5s ease both; }
-
-  @keyframes exitGlowR {
-    0%   { box-shadow: none; }
-    12%  { box-shadow:  4px 0 18px var(--neon-pink),  2px 0 8px var(--neon-purple); }
-    30%  { box-shadow:  2px 0 10px var(--neon-pink); }
-    52%  { box-shadow:  7px 0 28px var(--neon-pink),  3px 0 12px var(--neon-purple), 1px 0 4px #fff; }
-    75%  { box-shadow:  3px 0 14px var(--neon-pink); }
-    100% { box-shadow: none; }
+  /* ─── SEAM — светящийся стык между экранами ─── */
+  #seam {
+    position: fixed;
+    top: 0; bottom: 0;
+    left: -2px;
+    width: 2px;
+    z-index: 300;
+    pointer-events: none;
+    background: var(--neon-pink);
+    box-shadow: 0 0 8px var(--neon-pink), 0 0 20px var(--neon-purple), 0 0 2px #fff;
+    opacity: 0;
   }
-  @keyframes exitGlowL {
-    0%   { box-shadow: none; }
-    12%  { box-shadow: -4px 0 18px var(--neon-pink), -2px 0 8px var(--neon-purple); }
-    30%  { box-shadow: -2px 0 10px var(--neon-pink); }
-    52%  { box-shadow: -7px 0 28px var(--neon-pink), -3px 0 12px var(--neon-purple), -1px 0 4px #fff; }
-    75%  { box-shadow: -3px 0 14px var(--neon-pink); }
-    100% { box-shadow: none; }
+  #seam.seam-left  { animation: seamL 0.45s cubic-bezier(0.25, 0.46, 0.45, 0.94) both; }
+  #seam.seam-right { animation: seamR 0.45s cubic-bezier(0.25, 0.46, 0.45, 0.94) both; }
+  #seam.seam-fast  { animation-duration: 0.28s !important; }
+
+  @keyframes seamL {
+    0%   { opacity: 0;   transform: translateX(100vw); }
+    8%   { opacity: 1; }
+    90%  { opacity: 0.8; }
+    100% { opacity: 0;   transform: translateX(0); }
+  }
+  @keyframes seamR {
+    0%   { opacity: 0;   transform: translateX(0); }
+    8%   { opacity: 1; }
+    90%  { opacity: 0.8; }
+    100% { opacity: 0;   transform: translateX(100vw); }
   }
 
   /* ─── SWIPE HINT ─── */
@@ -1081,6 +1089,7 @@
 
 <!-- Glitch edge -->
 <div id="glitch-edge"></div>
+<div id="seam"></div>
 
 <!-- Индикатор экранов -->
 <div class="status-bar">
@@ -1159,20 +1168,23 @@ function showEdgeGlitch(side) {
 }
 
 // exitDir: 'left' | 'right' — куда уходит fromScreen
+function showSeam(dir, fast) {
+  const seam = document.getElementById('seam');
+  seam.classList.remove('seam-left', 'seam-right', 'seam-fast');
+  seam.offsetHeight; // reflow
+  seam.classList.add(dir === 'left' ? 'seam-left' : 'seam-right');
+  if (fast) seam.classList.add('seam-fast');
+}
+
 function navigateTo(fromScreen, exitDir, toScreen, dotFrom, dotTo, afterFn) {
   currentScreen = toScreen.id.replace('screen-', '');
-  const glowClass = exitDir === 'left' ? 'exit-glow-right' : 'exit-glow-left';
-  fromScreen.classList.add(glowClass);
   fromScreen.style.transform = exitDir === 'left' ? 'translateX(-100%)' : 'translateX(100%)';
   toScreen.style.transform = 'translateX(0)';
-  showEdgeGlitch(exitDir);
+  showSeam(exitDir);
   if (dotFrom) dotFrom.classList.remove('active');
   if (dotTo)   dotTo.classList.add('active');
   if (typeof updateDotEdges === 'function') updateDotEdges();
-  setTimeout(() => {
-    fromScreen.classList.remove('exit-glow-right', 'exit-glow-left');
-    if (afterFn) afterFn();
-  }, 500);
+  if (afterFn) setTimeout(afterFn, 460);
 }
 
 function goToRun() {
@@ -1287,11 +1299,9 @@ function btnClick(btn, action) {
   if (action === 'new_run') {
     startScreen.classList.remove('return');
     startScreen.classList.add('escape');
-    startScreen.classList.add('exit-glow-right');
     startScreen.style.transform = 'translateX(-100%)';
     dotStart.classList.remove('active');
-    showEdgeGlitch('left');
-    setTimeout(() => startScreen.classList.remove('exit-glow-right'), 500);
+    showSeam('left', true);
     showHuginn();
     openSheet('sheet-newrun');
     // Перезапускаем анимацию hint
