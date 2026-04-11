@@ -281,6 +281,37 @@
     box-shadow: 0 0 6px var(--neon-pink);
   }
 
+  /* ─── GLITCH EDGE — дальний край при переходе ─── */
+  #glitch-edge {
+    position: fixed;
+    top: 0; bottom: 0;
+    width: 0;
+    z-index: 500;
+    pointer-events: none;
+    opacity: 0;
+    background: linear-gradient(
+      180deg,
+      transparent 0%,
+      var(--neon-pink) 25%,
+      var(--neon-purple) 55%,
+      var(--neon-pink) 80%,
+      transparent 100%
+    );
+  }
+  #glitch-edge.g-left  { left: 0; }
+  #glitch-edge.g-right { right: 0; }
+  #glitch-edge.g-active {
+    animation: edgeGlitch 0.28s ease both;
+  }
+  @keyframes edgeGlitch {
+    0%   { opacity: 0; width: 0px; }
+    15%  { opacity: 1; width: 5px; }
+    35%  { opacity: 0.4; width: 2px; }
+    55%  { opacity: 0.8; width: 4px; }
+    75%  { opacity: 0.3; width: 1px; }
+    100% { opacity: 0; width: 0px; }
+  }
+
   /* ─── SWIPE HINT ─── */
   .swipe-hint {
     position: absolute;
@@ -1017,6 +1048,9 @@
   </div>
 </div>
 
+<!-- Glitch edge -->
+<div id="glitch-edge"></div>
+
 <!-- Индикатор экранов -->
 <div class="status-bar">
   <div class="dot active" id="dot-start"></div>
@@ -1084,25 +1118,38 @@ document.addEventListener('touchend', e => {
   }
 }, { passive: true });
 
+// ─── ЕДИНЫЙ ПЕРЕХОД ЭКРАНОВ ───
+const glitchEdge = document.getElementById('glitch-edge');
+
+function showEdgeGlitch(side) {
+  glitchEdge.classList.remove('g-left', 'g-right', 'g-active');
+  glitchEdge.offsetHeight; // reflow
+  glitchEdge.classList.add('g-' + side, 'g-active');
+}
+
+// exitDir: 'left' | 'right' — куда уходит fromScreen
+function navigateTo(fromScreen, exitDir, toScreen, dotFrom, dotTo, afterFn) {
+  currentScreen = toScreen.id.replace('screen-', '');
+  fromScreen.style.transform = exitDir === 'left' ? 'translateX(-100%)' : 'translateX(100%)';
+  toScreen.style.transform = 'translateX(0)';
+  showEdgeGlitch(exitDir === 'left' ? 'right' : 'left');
+  if (dotFrom) dotFrom.classList.remove('active');
+  if (dotTo)   dotTo.classList.add('active');
+  if (afterFn) setTimeout(afterFn, 460);
+}
+
 function goToRun() {
-  currentScreen = 'run';
-  startScreen.style.transform = 'translateX(-100%)';
-  runScreen.style.transform = 'translateX(0)';
-  dotStart.classList.remove('active');
-  dotRun.classList.add('active');
-  maybeShowPing();
-  wiredNet.start();
-  rainPanel.start();
+  navigateTo(startScreen, 'left', runScreen, dotStart, dotRun, () => {
+    maybeShowPing();
+    wiredNet.start();
+    rainPanel.start();
+  });
 }
 
 function goToStart() {
-  currentScreen = 'start';
-  startScreen.style.transform = 'translateX(0)';
   wiredNet.stop();
   rainPanel.stop();
-  runScreen.style.transform = 'translateX(100%)';    // меню уходит вправо
-  dotRun.classList.remove('active');
-  dotStart.classList.add('active');
+  navigateTo(runScreen, 'right', startScreen, dotRun, dotStart);
 }
 
 // ─── BOTTOM SHEETS ───
@@ -1205,6 +1252,7 @@ function btnClick(btn, action) {
     startScreen.classList.add('escape');
     startScreen.style.transform = 'translateX(-100%)';
     dotStart.classList.remove('active');
+    showEdgeGlitch('right');
     showHuginn();
     openSheet('sheet-newrun');
     // Перезапускаем анимацию hint
@@ -1419,28 +1467,22 @@ const encounterScreen = document.getElementById('screen-encounter');
 const dotEncounter    = document.getElementById('dot-encounter');
 
 function goToEncounter() {
-  currentScreen = 'encounter';
-  runScreen.style.transform        = 'translateX(-100%)';
-  encounterScreen.style.transform  = 'translateX(0)';
-  dotRun.classList.remove('active');
-  dotEncounter.classList.add('active');
   wiredNet.stop();
   rainPanel.stop();
-  huginnRain.start();
-  muninnRain.start();
-  maybeShowPing();
+  navigateTo(runScreen, 'left', encounterScreen, dotRun, dotEncounter, () => {
+    huginnRain.start();
+    muninnRain.start();
+    maybeShowPing();
+  });
 }
 
 function goFromEncounter() {
-  currentScreen = 'run';
-  runScreen.style.transform        = 'translateX(0)';
-  encounterScreen.style.transform  = 'translateX(100%)';
-  dotRun.classList.add('active');
-  dotEncounter.classList.remove('active');
   huginnRain.stop();
   muninnRain.stop();
-  wiredNet.start();
-  rainPanel.start();
+  navigateTo(encounterScreen, 'right', runScreen, dotEncounter, dotRun, () => {
+    wiredNet.start();
+    rainPanel.start();
+  });
 }
 
 // ─── ФОРМА ПЕРСОНАЖА ───
