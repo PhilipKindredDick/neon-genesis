@@ -272,13 +272,23 @@
     width: 6px; height: 6px;
     border-radius: 50%;
     background: rgba(255,255,255,0.2);
-    transition: background 0.3s, transform 0.3s;
+    transition: background 0.3s, transform 0.3s, opacity 0.3s;
   }
 
   .dot.active {
     background: var(--neon-pink);
     transform: scale(1.4);
     box-shadow: 0 0 6px var(--neon-pink);
+  }
+
+  /* крайние точки: те, что дальше от активной — меньше и прозрачнее */
+  .dot.edge-far {
+    transform: scale(0.6);
+    opacity: 0.4;
+  }
+  .dot.edge-near {
+    transform: scale(0.85);
+    opacity: 0.65;
   }
 
   /* ─── GLITCH EDGE — дальний край при переходе ─── */
@@ -1158,6 +1168,7 @@ function navigateTo(fromScreen, exitDir, toScreen, dotFrom, dotTo, afterFn) {
   showEdgeGlitch(exitDir === 'left' ? 'right' : 'left');
   if (dotFrom) dotFrom.classList.remove('active');
   if (dotTo)   dotTo.classList.add('active');
+  if (typeof updateDotEdges === 'function') updateDotEdges();
   setTimeout(() => {
     fromScreen.classList.remove('exit-glow-right', 'exit-glow-left');
     if (afterFn) afterFn();
@@ -1493,6 +1504,20 @@ function swapHuginnMuninn() {
 // ─── НАВИГАЦИЯ: ВСТРЕЧА ───
 const encounterScreen = document.getElementById('screen-encounter');
 const dotEncounter    = document.getElementById('dot-encounter');
+
+const allDots = [dotStart, dotRun, dotEncounter];
+
+function updateDotEdges() {
+  const activeIdx = allDots.findIndex(d => d.classList.contains('active'));
+  allDots.forEach((d, i) => {
+    d.classList.remove('edge-far', 'edge-near');
+    if (d.classList.contains('active')) return;
+    const dist = Math.abs(i - activeIdx);
+    if (dist === 1) d.classList.add('edge-near');
+    else            d.classList.add('edge-far');
+  });
+}
+updateDotEdges();
 
 function goToEncounter() {
   wiredNet.stop();
