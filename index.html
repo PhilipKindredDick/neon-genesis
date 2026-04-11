@@ -421,6 +421,13 @@
     background-position: top center;
     background-repeat: no-repeat;
   }
+  .noosphere-overlay.entering {
+    animation: overlayDescend 0.55s cubic-bezier(0.25, 0.46, 0.45, 0.94) both;
+  }
+  @keyframes overlayDescend {
+    from { transform: translateY(-48px); }
+    to   { transform: translateY(0); }
+  }
   .noosphere-overlay.visible { opacity: 1; }
   .noosphere-overlay.frozen { opacity: 0.35; filter: blur(1px); transition: opacity 0.4s, filter 0.4s; }
   #overlay-huginn { background-image: url('assets/arts/ui/Huginn.png'); }
@@ -1339,7 +1346,9 @@ const overlayMuninn = document.getElementById('overlay-muninn');
 
 function showHuginn() {
   overlayMuninn.classList.remove('visible');
-  overlayHuginn.classList.add('visible');
+  overlayHuginn.classList.remove('entering');
+  overlayHuginn.offsetHeight; // reflow → перезапуск анимации
+  overlayHuginn.classList.add('visible', 'entering');
 }
 function showMuninn() {
   overlayHuginn.classList.remove('visible');
@@ -1349,8 +1358,8 @@ let swapTimer = null;
 
 function hideNoosphere() {
   if (swapTimer) { clearTimeout(swapTimer); swapTimer = null; }
-  overlayHuginn.classList.remove('visible');
-  overlayMuninn.classList.remove('visible');
+  overlayHuginn.classList.remove('visible', 'entering');
+  overlayMuninn.classList.remove('visible', 'entering');
 }
 
 // Смена с паттерном ...1-1-1-2-1-2-2-2....
