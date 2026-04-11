@@ -1274,7 +1274,7 @@ function closeNewRun() {
     runsPanel.style.display  = '';
     newrunPanel.style.display = '';
     hideNoosphere();
-    startScreen.style.zIndex = '';
+    setTimeout(() => { startScreen.style.zIndex = ''; }, 420);
   });
 }
 
