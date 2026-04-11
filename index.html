@@ -1302,8 +1302,7 @@ function btnClick(btn, action) {
     startScreen.style.transform = 'translateX(-100%)';
     dotStart.classList.remove('active');
     showSeam('left', true);
-    showHuginn();
-    openSheet('sheet-newrun');
+    setTimeout(() => { showHuginn(); openSheet('sheet-newrun'); }, 280);
     // Перезапускаем анимацию hint
     const hint = document.getElementById('scroll-hint');
     hint.style.animation = 'none';
