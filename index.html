@@ -1215,7 +1215,7 @@ document.addEventListener('touchend', e => {
   if (dx > 0 && currentScreen === 'encounter') {
     goFromEncounter();
   } else if (dx > 0 && currentScreen === 'run') {
-    goToStart();
+    runScreen.classList.contains('mode-newrun') ? closeNewRun() : goToStart();
   } else if (dx < 0 && currentScreen === 'start') {
     goToRun();
   }
