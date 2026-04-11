@@ -1274,7 +1274,13 @@ function closeNewRun() {
     runsPanel.style.display  = '';
     newrunPanel.style.display = '';
     hideNoosphere();
-    setTimeout(() => { startScreen.style.zIndex = ''; }, 600);
+    overlayHuginn.style.display = 'none';
+    overlayMuninn.style.display = 'none';
+    startScreen.style.zIndex = '';
+    setTimeout(() => {
+      overlayHuginn.style.display = '';
+      overlayMuninn.style.display = '';
+    }, 100);
   });
 }
 
