@@ -1206,6 +1206,7 @@ function goToStart() {
 const backdrop = document.getElementById('backdrop');
 let activeSheet = null;
 let pageHistory = [];
+let newRunMode = false;
 
 function openSheet(id) {
   if (activeSheet) closeSheet();
@@ -1231,12 +1232,10 @@ function closeSheet() {
   activeSheet = null;
   document.body.style.touchAction = 'pan-y';
 
-  // Если закрыли "Новый ран" — возвращаем стартовый экран
-  if (currentScreen === 'start') {
-    startScreen.classList.remove('escape');
-    startScreen.style.transform = 'translateX(0)';
-    dotStart.classList.add('active');
+  if (newRunMode) {
+    newRunMode = false;
     hideNoosphere();
+    navigateTo(runScreen, 'right', startScreen, dotRun, dotStart);
   }
 }
 
@@ -1298,17 +1297,16 @@ function btnClick(btn, action) {
   setTimeout(() => btn.classList.remove('ripple'), 300);
 
   if (action === 'new_run') {
-    startScreen.classList.remove('return');
-    startScreen.classList.add('escape');
-    startScreen.style.transform = 'translateX(-100%)';
-    dotStart.classList.remove('active');
-    showSeam('left', true);
-    setTimeout(() => { showHuginn(); openSheet('sheet-newrun'); }, 280);
-    // Перезапускаем анимацию hint
-    const hint = document.getElementById('scroll-hint');
-    hint.style.animation = 'none';
-    hint.offsetHeight; // reflow
-    hint.style.animation = '';
+    newRunMode = true;
+    navigateTo(startScreen, 'left', runScreen, dotStart, dotRun, () => {
+      showHuginn();
+      openSheet('sheet-newrun');
+      // Перезапускаем анимацию hint
+      const hint = document.getElementById('scroll-hint');
+      hint.style.animation = 'none';
+      hint.offsetHeight;
+      hint.style.animation = '';
+    });
   } else if (action === 'my_runs') {
     goToRun();
   } else if (action === 'rules') {
