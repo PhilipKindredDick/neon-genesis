@@ -1353,6 +1353,8 @@ const overlayMuninn = document.getElementById('overlay-muninn');
 
 function showHuginn() {
   overlayMuninn.classList.remove('visible');
+  overlayHuginn.style.display = '';  // сброс на случай display:none от closeNewRun
+  overlayMuninn.style.display = '';
   overlayHuginn.classList.remove('entering');
   overlayHuginn.offsetHeight; // reflow → перезапуск анимации
   overlayHuginn.classList.add('visible', 'entering');
