@@ -666,6 +666,13 @@
     border-color: rgba(168,85,247,0.6);
     color: rgba(255,255,255,0.8);
   }
+  .action-btn--icon img {
+    width: 20px; height: 20px;
+    object-fit: contain;
+    opacity: 0.55;
+    filter: brightness(0) invert(1);
+  }
+  .action-btn--icon:active img { opacity: 0.9; }
 
   /* ─── ЭКРАН ВСТРЕЧИ ─── */
   #screen-encounter {
@@ -900,7 +907,7 @@
       <div class="sheet-nav">
         <div class="sheet-nav-actions">
           <button class="action-btn" title="Хугин ↔ Мунин" onclick="swapNoosphere()">①</button>
-          <button class="action-btn" title="2">②</button>
+          <button class="action-btn action-btn--icon" title="Хромовый самурай"><img src="assets/arts/ui/classes/chromium.svg" alt="chromium"></button>
           <button class="action-btn" title="3">③</button>
           <button class="action-btn" title="4">④</button>
           <button class="action-btn" title="5">⑤</button>
