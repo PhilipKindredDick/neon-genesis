@@ -429,6 +429,8 @@
     to   { transform: translateY(0); }
   }
   .noosphere-overlay.visible { opacity: 1; }
+  /* В режиме нового рана — Хугин уходит за панель */
+  .noosphere-overlay.behind { z-index: 8; }
   .noosphere-overlay.frozen { opacity: 0.35; filter: blur(1px); transition: opacity 0.4s, filter 0.4s; }
   #overlay-huginn { background-image: url('assets/arts/ui/Huginn.png'); }
   #overlay-muninn { background-image: url('assets/arts/ui/Muninn.png'); }
@@ -1287,6 +1289,7 @@ function closeNewRun() {
     runScreen.classList.remove('mode-newrun');
     runsPanel.style.display  = '';
     newrunPanel.style.display = '';
+    overlayHuginn.classList.remove('behind');
     hideNoosphere();
     overlayHuginn.style.display = 'none';
     overlayMuninn.style.display = 'none';
@@ -1358,6 +1361,10 @@ function showHuginn() {
   overlayHuginn.classList.remove('entering');
   overlayHuginn.offsetHeight; // reflow → перезапуск анимации
   overlayHuginn.classList.add('visible', 'entering');
+  // В новом ране — Хугин уходит за панель (z-index 8 < screen-run z-index 9)
+  if (runScreen.classList.contains('mode-newrun')) {
+    overlayHuginn.classList.add('behind');
+  }
 }
 function showMuninn() {
   overlayHuginn.classList.remove('visible');
