@@ -657,6 +657,8 @@
   }
 
   /* Прогрессивное раскрытие формы */
+  #form-identity { min-height: calc(42vh - 145px); }
+
   #newrun-greeting {
     overflow: hidden;
     transition: max-height 0.4s ease, opacity 0.3s ease;
@@ -1810,9 +1812,9 @@ document.querySelectorAll('.char-input').forEach(input => {
     if (nameInput.value.trim() && nickInput.value.trim()) {
       if (!formClass.classList.contains('revealed') && !revealTimer) {
         revealTimer = setTimeout(() => {
-          // Клавиатура к этому моменту скорее всего закрылась — берём полную высоту
           document.getElementById('form-identity').style.minHeight = body.offsetHeight + 'px';
           formClass.classList.add('revealed');
+          body.scrollTop = 0; // приветствие схлопнуто — 0 = начало полей имя+ник
           revealTimer = null;
         }, 800);
       }
