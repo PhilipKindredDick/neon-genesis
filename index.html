@@ -1768,7 +1768,12 @@ function confirmInput() {
 document.querySelectorAll('.char-input').forEach(input => {
   input.addEventListener('focus', function() {
     freezeRain();
-    setTimeout(() => this.scrollIntoView({ behavior: 'smooth', block: 'center' }), 300);
+    const el = this;
+    setTimeout(() => {
+      if (!document.getElementById('form-class').classList.contains('revealed')) {
+        el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      }
+    }, 300);
   });
 });
 
