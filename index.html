@@ -376,6 +376,21 @@
     to { opacity: 0; }
   }
 
+  /* ─── БЛОКИРОВКА ЛАНДШАФТА ─── */
+  #portrait-lock {
+    display: none;
+    position: fixed; inset: 0; z-index: 9999;
+    background: #0A0010;
+    align-items: center; justify-content: center;
+    flex-direction: column; gap: 12px;
+    color: rgba(255,255,255,0.7);
+    font-family: var(--font-main);
+    font-size: 14px; letter-spacing: 0.05em;
+  }
+  @media screen and (orientation: landscape) {
+    #portrait-lock { display: flex; }
+  }
+
   /* ─── SCROLL HINT (в шите) ─── */
   .scroll-hint {
     text-align: center;
@@ -869,6 +884,11 @@
 </style>
 </head>
 <body>
+
+<!-- Блокировка ландшафтной ориентации -->
+<div id="portrait-lock">
+  <span>📱 поверни телефон</span>
+</div>
 
 <!-- Экран 0: Стартовый -->
 <div class="screen" id="screen-start">
@@ -1748,7 +1768,7 @@ function confirmInput() {
 document.querySelectorAll('.char-input').forEach(input => {
   input.addEventListener('focus', function() {
     freezeRain();
-    setTimeout(() => this.scrollIntoView({ behavior: 'smooth', block: 'center' }), 150);
+    setTimeout(() => this.scrollIntoView({ behavior: 'smooth', block: 'center' }), 300);
   });
 });
 
@@ -1781,9 +1801,6 @@ document.querySelectorAll('.char-input').forEach(input => {
     if (nameInput.value.trim() && nickInput.value.trim()) {
       if (!formClass.classList.contains('revealed')) {
         formClass.classList.add('revealed');
-        setTimeout(() => {
-          body.scrollTo({ top: formClass.offsetTop - 48, behavior: 'smooth' });
-        }, 150);
       }
     }
   }
