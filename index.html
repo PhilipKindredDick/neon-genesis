@@ -641,6 +641,58 @@
     text-shadow: 0 0 8px rgba(233,30,204,0.4);
   }
 
+  /* Прогрессивное раскрытие формы */
+  #form-class {
+    max-height: 0;
+    overflow: hidden;
+    opacity: 0;
+    margin-top: 0;
+    padding-top: 0;
+    border-top: none;
+    transition: max-height 0.5s ease, opacity 0.4s ease 0.1s;
+  }
+  #form-class.revealed {
+    max-height: 400px;
+    opacity: 1;
+    margin-top: 24px;
+    padding-top: 18px;
+    border-top: 1px solid rgba(168,85,247,0.2);
+  }
+
+  /* Кнопки выбора класса в форме */
+  .class-btn-row {
+    display: flex;
+    gap: 6px;
+  }
+  .class-btn {
+    flex: 1;
+    height: 44px;
+    padding: 8px 4px;
+    border-radius: 10px;
+    border: 1px solid rgba(168,85,247,0.3);
+    background: rgba(168,85,247,0.07);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    -webkit-tap-highlight-color: transparent;
+    transition: background 0.15s, border-color 0.15s;
+    box-sizing: border-box;
+  }
+  .class-btn img {
+    width: 22px;
+    height: 22px;
+    object-fit: contain;
+    opacity: 0.55;
+    filter: brightness(0) invert(1);
+  }
+  .class-btn.active {
+    background: rgba(233,30,204,0.18);
+    border-color: var(--neon-pink);
+  }
+  .class-btn.active img { opacity: 0.9; }
+  .class-btn:active { background: rgba(168,85,247,0.2); }
+
   /* ─── 6 кнопок действий в nav ─── */
   .sheet-nav-actions {
     display: flex;
@@ -879,14 +931,14 @@
         <h2>Новый ран</h2>
       </div>
       <div class="sheet-body" id="newrun-body">
-        <div class="section-content">
+        <div id="newrun-greeting">
           <p style="color:rgba(255,255,255,0.55);font-style:italic;padding:8px 0;text-shadow:0 0 8px rgba(233,30,204,0.4);">
             Сеть формирует твой профиль...<br><br>
             Выбор класса и первая встреча —<br>скоро.
           </p>
+          <div class="scroll-hint" id="scroll-hint">↓ &nbsp; листай &nbsp; ↓</div>
         </div>
-        <div class="scroll-hint" id="scroll-hint">↓ &nbsp; листай &nbsp; ↓</div>
-        <div class="char-form">
+        <div class="char-form" id="form-identity">
           <div class="char-form-tag">// инициализация //</div>
           <div class="char-field">
             <label>../имя</label>
@@ -896,12 +948,25 @@
             <label>../сетевой_ник</label>
             <input class="char-input" id="char-nick" type="text" placeholder="../позывной" maxlength="20" autocomplete="off">
           </div>
+        </div>
+        <div class="char-form" id="form-class">
           <div class="char-field">
             <label>../пол</label>
             <div class="gender-row">
               <button class="gender-btn" data-g="m" onclick="selectGender(this)">../M</button>
               <button class="gender-btn" data-g="f" onclick="selectGender(this)">../F</button>
               <button class="gender-btn" data-g="x" onclick="selectGender(this)">../X</button>
+            </div>
+          </div>
+          <div class="char-field">
+            <label>../класс</label>
+            <div class="class-btn-row">
+              <button class="class-btn" title="Нетраннер"><img src="assets/arts/ui/classes/netrunner.svg" alt="netrunner"></button>
+              <button class="class-btn" title="Хромовый самурай"><img src="assets/arts/ui/classes/chromium.svg" alt="chromium"></button>
+              <button class="class-btn" title="Лицо"><img src="assets/arts/ui/classes/face.svg" alt="face"></button>
+              <button class="class-btn" title="Теургист"><img src="assets/arts/ui/classes/theurgist.svg" alt="theurgist"></button>
+              <button class="class-btn" title="Шаман"><img src="assets/arts/ui/classes/shaman.svg" alt="shaman"></button>
+              <button class="class-btn" title="Поток"><img src="assets/arts/ui/classes/flow.svg" alt="flow"></button>
             </div>
           </div>
         </div>
@@ -1677,6 +1742,53 @@ function confirmInput() {
 document.querySelectorAll('.char-input').forEach(input => {
   input.addEventListener('focus', freezeRain);
 });
+
+// ─── ПРОГРЕССИВНАЯ ФОРМА НОВОГО РАНА ───
+(function() {
+  const body     = document.getElementById('newrun-body');
+  const greeting = document.getElementById('newrun-greeting');
+  const formClass = document.getElementById('form-class');
+  const nameInput = document.getElementById('char-name');
+  const nickInput = document.getElementById('char-nick');
+  let minScroll = 0;
+  let greetingLocked = false;
+
+  // Скролл-лок: после прокрутки мимо приветствия — обратно не пустим
+  body.addEventListener('scroll', function() {
+    if (!greetingLocked) {
+      const h = greeting.offsetHeight;
+      if (body.scrollTop >= h * 0.6) {
+        greetingLocked = true;
+        minScroll = h;
+      }
+    }
+    if (greetingLocked && body.scrollTop < minScroll) {
+      body.scrollTop = minScroll;
+    }
+  }, { passive: false });
+
+  // Раскрытие пол+класс после заполнения имени и ника
+  function checkReveal() {
+    if (nameInput.value.trim() && nickInput.value.trim()) {
+      if (!formClass.classList.contains('revealed')) {
+        formClass.classList.add('revealed');
+        setTimeout(() => {
+          body.scrollTo({ top: body.scrollHeight, behavior: 'smooth' });
+        }, 100);
+      }
+    }
+  }
+  nameInput.addEventListener('input', checkReveal);
+  nickInput.addEventListener('input', checkReveal);
+
+  // Выбор класса
+  document.querySelectorAll('.class-btn').forEach(btn => {
+    btn.addEventListener('click', function() {
+      document.querySelectorAll('.class-btn').forEach(b => b.classList.remove('active'));
+      this.classList.add('active');
+    });
+  });
+})();
 
 // ─── TELEGRAM WEBAPP INIT ───
 if (window.Telegram?.WebApp) {
