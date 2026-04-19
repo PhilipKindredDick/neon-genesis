@@ -1782,8 +1782,8 @@ document.querySelectorAll('.char-input').forEach(input => {
       if (!formClass.classList.contains('revealed')) {
         formClass.classList.add('revealed');
         setTimeout(() => {
-          body.scrollTo({ top: body.scrollHeight, behavior: 'smooth' });
-        }, 100);
+          body.scrollTo({ top: formClass.offsetTop - 48, behavior: 'smooth' });
+        }, 150);
       }
     }
   }
