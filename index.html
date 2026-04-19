@@ -947,7 +947,7 @@
           <div class="char-form-tag">// инициализация //</div>
           <div class="char-field">
             <label>../имя</label>
-            <input class="char-input" id="char-name" type="text" placeholder="Настоящее имя" maxlength="24" autocomplete="off">
+            <input class="char-input" id="char-name" type="text" placeholder="../твое_имя" maxlength="24" autocomplete="off">
           </div>
           <div class="char-field">
             <label>../сетевой_ник</label>
@@ -1746,7 +1746,10 @@ function confirmInput() {
 
 // Слушаем фокус на полях ввода
 document.querySelectorAll('.char-input').forEach(input => {
-  input.addEventListener('focus', freezeRain);
+  input.addEventListener('focus', function() {
+    freezeRain();
+    setTimeout(() => this.scrollIntoView({ behavior: 'smooth', block: 'center' }), 150);
+  });
 });
 
 // ─── ПРОГРЕССИВНАЯ ФОРМА НОВОГО РАНА ───
