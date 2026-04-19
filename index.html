@@ -1812,9 +1812,9 @@ document.querySelectorAll('.char-input').forEach(input => {
     if (nameInput.value.trim() && nickInput.value.trim()) {
       if (!formClass.classList.contains('revealed') && !revealTimer) {
         revealTimer = setTimeout(() => {
-          document.getElementById('form-identity').style.minHeight = body.offsetHeight + 'px';
+          window.syncFormHeight?.();
           formClass.classList.add('revealed');
-          body.scrollTop = 0; // приветствие схлопнуто — 0 = начало полей имя+ник
+          body.scrollTop = 0;
           revealTimer = null;
         }, 800);
       }
@@ -1835,8 +1835,16 @@ document.querySelectorAll('.char-input').forEach(input => {
   });
 
   window.syncFormHeight = function() {
-    document.getElementById('form-identity').style.minHeight = body.offsetHeight + 'px';
+    const fi = document.getElementById('form-identity');
+    const newH = body.offsetHeight;
+    const curH = parseInt(fi.style.minHeight) || 0;
+    if (newH > curH) fi.style.minHeight = newH + 'px';
   };
+
+  // Обновляем minHeight при закрытии клавиатуры (viewport растёт)
+  if (window.visualViewport) {
+    window.visualViewport.addEventListener('resize', () => window.syncFormHeight?.());
+  }
 
   window.resetNewRunForm = function() {
     clearTimeout(revealTimer);
