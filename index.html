@@ -642,6 +642,11 @@
   }
 
   /* Прогрессивное раскрытие формы */
+  #newrun-greeting {
+    overflow: hidden;
+    transition: max-height 0.4s ease, opacity 0.3s ease;
+  }
+
   #form-class {
     max-height: 0;
     overflow: hidden;
@@ -1339,6 +1344,7 @@ function goToStart() {
 }
 
 function closeNewRun() {
+  window.resetNewRunForm?.();
   // Фиксируем панели через inline style — не зависим от класса
   const runsPanel  = runScreen.querySelector('.runs-panel');
   const newrunPanel = runScreen.querySelector('.newrun-panel');
@@ -1733,7 +1739,7 @@ function confirmInput() {
   overlayMuninn.classList.remove('frozen');
   newrunBody.style.overflowY = '';
   btnAction.textContent = '✕';
-  btnAction.onclick = closeSheet;
+  btnAction.onclick = closeNewRun;
   btnAction.style.color = '';
   btnAction.style.borderColor = '';
 }
@@ -1745,27 +1751,27 @@ document.querySelectorAll('.char-input').forEach(input => {
 
 // ─── ПРОГРЕССИВНАЯ ФОРМА НОВОГО РАНА ───
 (function() {
-  const body     = document.getElementById('newrun-body');
-  const greeting = document.getElementById('newrun-greeting');
+  const body      = document.getElementById('newrun-body');
+  const greeting  = document.getElementById('newrun-greeting');
   const formClass = document.getElementById('form-class');
   const nameInput = document.getElementById('char-name');
   const nickInput = document.getElementById('char-nick');
-  let minScroll = 0;
   let greetingLocked = false;
 
-  // Скролл-лок: после прокрутки мимо приветствия — обратно не пустим
+  // Скролл-лок: после прокрутки мимо приветствия — схлопываем div до нуля
   body.addEventListener('scroll', function() {
     if (!greetingLocked) {
       const h = greeting.offsetHeight;
       if (body.scrollTop >= h * 0.6) {
         greetingLocked = true;
-        minScroll = h;
+        greeting.style.maxHeight = h + 'px';
+        greeting.offsetHeight; // reflow
+        greeting.style.maxHeight = '0';
+        greeting.style.opacity = '0';
+        greeting.style.pointerEvents = 'none';
       }
     }
-    if (greetingLocked && body.scrollTop < minScroll) {
-      body.scrollTop = minScroll;
-    }
-  }, { passive: false });
+  });
 
   // Раскрытие пол+класс после заполнения имени и ника
   function checkReveal() {
@@ -1788,6 +1794,19 @@ document.querySelectorAll('.char-input').forEach(input => {
       this.classList.add('active');
     });
   });
+
+  window.resetNewRunForm = function() {
+    nameInput.value = '';
+    nickInput.value = '';
+    formClass.classList.remove('revealed');
+    document.querySelectorAll('.class-btn').forEach(b => b.classList.remove('active'));
+    document.querySelectorAll('.gender-btn').forEach(b => b.classList.remove('active'));
+    greeting.style.maxHeight = '';
+    greeting.style.opacity = '';
+    greeting.style.pointerEvents = '';
+    greetingLocked = false;
+    body.scrollTop = 0;
+  };
 })();
 
 // ─── TELEGRAM WEBAPP INIT ───
