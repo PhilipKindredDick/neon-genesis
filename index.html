@@ -1800,7 +1800,9 @@ document.querySelectorAll('.char-input').forEach(input => {
   function checkReveal() {
     if (nameInput.value.trim() && nickInput.value.trim()) {
       if (!formClass.classList.contains('revealed')) {
+        const savedScroll = body.scrollTop;
         formClass.classList.add('revealed');
+        requestAnimationFrame(() => { body.scrollTop = savedScroll; });
       }
     }
   }
@@ -1837,7 +1839,10 @@ if (window.Telegram?.WebApp) {
   twa.setHeaderColor('#0A0010');
   twa.setBackgroundColor('#0A0010');
   twa.setBottomBarColor?.('#0A0010'); // API 7.10+
+  twa.lockOrientation?.();            // Bot API 8.0+
 }
+// Фоллбэк — нативный API
+window.screen?.orientation?.lock?.('portrait').catch(() => {});
 </script>
 </body>
 </html>
