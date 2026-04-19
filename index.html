@@ -1759,6 +1759,8 @@ function confirmInput() {
   overlayHuginn.classList.remove('frozen');
   overlayMuninn.classList.remove('frozen');
   newrunBody.style.overflowY = '';
+  // Keyboard just closed — update form-identity height so gender/class stays below fold
+  requestAnimationFrame(() => window.syncFormHeight?.());
   btnAction.textContent = '✕';
   btnAction.onclick = closeNewRun;
   btnAction.style.color = '';
@@ -1802,14 +1804,21 @@ document.querySelectorAll('.char-input').forEach(input => {
     }
   });
 
-  // Раскрытие пол+класс после заполнения имени и ника
+  // Раскрытие пол+класс после заполнения имени и ника — с задержкой
+  let revealTimer = null;
   function checkReveal() {
     if (nameInput.value.trim() && nickInput.value.trim()) {
-      if (!formClass.classList.contains('revealed')) {
-        const savedScroll = body.scrollTop;
-        formClass.classList.add('revealed');
-        requestAnimationFrame(() => { body.scrollTop = savedScroll; });
+      if (!formClass.classList.contains('revealed') && !revealTimer) {
+        revealTimer = setTimeout(() => {
+          // Клавиатура к этому моменту скорее всего закрылась — берём полную высоту
+          document.getElementById('form-identity').style.minHeight = body.offsetHeight + 'px';
+          formClass.classList.add('revealed');
+          revealTimer = null;
+        }, 800);
       }
+    } else {
+      clearTimeout(revealTimer);
+      revealTimer = null;
     }
   }
   nameInput.addEventListener('input', checkReveal);
@@ -1828,6 +1837,8 @@ document.querySelectorAll('.char-input').forEach(input => {
   };
 
   window.resetNewRunForm = function() {
+    clearTimeout(revealTimer);
+    revealTimer = null;
     nameInput.value = '';
     nickInput.value = '';
     formClass.classList.remove('revealed');
