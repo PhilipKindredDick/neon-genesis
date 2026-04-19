@@ -657,8 +657,6 @@
   }
 
   /* Прогрессивное раскрытие формы */
-  #form-identity { min-height: 100%; }
-
   #newrun-greeting {
     overflow: hidden;
     transition: max-height 0.4s ease, opacity 0.3s ease;
@@ -1497,6 +1495,7 @@ function btnClick(btn, action) {
       hint.style.animation = 'none';
       hint.offsetHeight;
       hint.style.animation = '';
+      window.syncFormHeight?.();
     });
   } else if (action === 'my_runs') {
     goToRun();
@@ -1823,6 +1822,10 @@ document.querySelectorAll('.char-input').forEach(input => {
       this.classList.add('active');
     });
   });
+
+  window.syncFormHeight = function() {
+    document.getElementById('form-identity').style.minHeight = body.offsetHeight + 'px';
+  };
 
   window.resetNewRunForm = function() {
     nameInput.value = '';
