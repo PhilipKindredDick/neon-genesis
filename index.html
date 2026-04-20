@@ -1789,22 +1789,14 @@ document.querySelectorAll('.char-input').forEach(input => {
   const formClass = document.getElementById('form-class');
   const nameInput = document.getElementById('char-name');
   const nickInput = document.getElementById('char-nick');
-  let greetingLocked = false;
-
-  // Скролл-лок: после прокрутки мимо приветствия — схлопываем div до нуля
-  body.addEventListener('scroll', function() {
-    if (!greetingLocked) {
-      const h = greeting.offsetHeight;
-      if (body.scrollTop >= h * 0.6) {
-        greetingLocked = true;
-        greeting.style.maxHeight = h + 'px';
-        greeting.offsetHeight; // reflow
-        greeting.style.maxHeight = '0';
-        greeting.style.opacity = '0';
-        greeting.style.pointerEvents = 'none';
-      }
-    }
-  });
+  function collapseGreeting() {
+    const h = greeting.offsetHeight;
+    greeting.style.maxHeight = h + 'px';
+    greeting.offsetHeight; // reflow
+    greeting.style.maxHeight = '0';
+    greeting.style.opacity = '0';
+    greeting.style.pointerEvents = 'none';
+  }
 
   // Раскрытие пол+класс после заполнения имени и ника — с задержкой
   let revealTimer = null;
@@ -1812,6 +1804,7 @@ document.querySelectorAll('.char-input').forEach(input => {
     if (nameInput.value.trim() && nickInput.value.trim()) {
       if (!formClass.classList.contains('revealed') && !revealTimer) {
         revealTimer = setTimeout(() => {
+          collapseGreeting();
           window.syncFormHeight?.();
           formClass.classList.add('revealed');
           body.scrollTop = 0;
