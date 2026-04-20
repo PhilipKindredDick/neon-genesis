@@ -659,6 +659,11 @@
   /* Прогрессивное раскрытие формы */
   #form-identity { min-height: calc(42vh - 145px); }
 
+  #newrun-greeting {
+    overflow: hidden;
+    transition: max-height 0.4s ease, opacity 0.3s ease;
+  }
+
   #form-class {
     max-height: 0;
     overflow: hidden;
@@ -953,6 +958,13 @@
         <h2>Новый ран</h2>
       </div>
       <div class="sheet-body" id="newrun-body">
+        <div id="newrun-greeting">
+          <p style="color:rgba(255,255,255,0.55);font-style:italic;padding:8px 0;text-shadow:0 0 8px rgba(233,30,204,0.4);">
+            Сеть формирует твой профиль...<br><br>
+            Выбор класса и первая встреча —<br>скоро.
+          </p>
+          <div class="scroll-hint" id="scroll-hint">↓ &nbsp; листай &nbsp; ↓</div>
+        </div>
         <div class="char-form" id="form-identity">
           <div class="char-form-tag">// инициализация //</div>
           <div class="char-field">
@@ -965,7 +977,6 @@
           </div>
         </div>
         <div class="char-form" id="form-class">
-          <div class="char-form-tag">// выбери свой путь //</div>
           <div class="char-field">
             <label>../пол</label>
             <div class="gender-row">
@@ -1482,6 +1493,10 @@ function btnClick(btn, action) {
     navigateTo(startScreen, 'left', runScreen, dotStart, dotRun, () => {
       showHuginn();
       rainNewRun.start();
+      const hint = document.getElementById('scroll-hint');
+      hint.style.animation = 'none';
+      hint.offsetHeight;
+      hint.style.animation = '';
       window.syncFormHeight?.();
     });
   } else if (action === 'my_runs') {
@@ -1770,9 +1785,26 @@ document.querySelectorAll('.char-input').forEach(input => {
 // ─── ПРОГРЕССИВНАЯ ФОРМА НОВОГО РАНА ───
 (function() {
   const body      = document.getElementById('newrun-body');
+  const greeting  = document.getElementById('newrun-greeting');
   const formClass = document.getElementById('form-class');
   const nameInput = document.getElementById('char-name');
   const nickInput = document.getElementById('char-nick');
+  let greetingLocked = false;
+
+  // Скролл-лок: после прокрутки мимо приветствия — схлопываем div до нуля
+  body.addEventListener('scroll', function() {
+    if (!greetingLocked) {
+      const h = greeting.offsetHeight;
+      if (body.scrollTop >= h * 0.6) {
+        greetingLocked = true;
+        greeting.style.maxHeight = h + 'px';
+        greeting.offsetHeight; // reflow
+        greeting.style.maxHeight = '0';
+        greeting.style.opacity = '0';
+        greeting.style.pointerEvents = 'none';
+      }
+    }
+  });
 
   // Раскрытие пол+класс после заполнения имени и ника — с задержкой
   let revealTimer = null;
@@ -1822,6 +1854,10 @@ document.querySelectorAll('.char-input').forEach(input => {
     formClass.classList.remove('revealed');
     document.querySelectorAll('.class-btn').forEach(b => b.classList.remove('active'));
     document.querySelectorAll('.gender-btn').forEach(b => b.classList.remove('active'));
+    greeting.style.maxHeight = '';
+    greeting.style.opacity = '';
+    greeting.style.pointerEvents = '';
+    greetingLocked = false;
     body.scrollTop = 0;
   };
 })();
