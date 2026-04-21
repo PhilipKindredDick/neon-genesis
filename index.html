@@ -657,7 +657,6 @@
   }
 
   /* Прогрессивное раскрытие формы */
-  #newrun-body { padding-top: 0; }
   #form-identity { min-height: calc(42vh - 145px); margin-top: 0; padding-top: 0; border-top: none; }
 
   #newrun-greeting {
@@ -954,7 +953,7 @@
   <div class="newrun-panel" style="overflow:hidden;">
     <canvas id="newrun-canvas" style="position:absolute;inset:0;width:100%;height:100%;pointer-events:none;z-index:0;"></canvas>
     <div style="position:relative;z-index:1;display:flex;flex-direction:column;height:100%;">
-      <div class="sheet-header" style="flex-shrink:0;">
+      <div class="sheet-header" id="newrun-header" style="flex-shrink:0;overflow:hidden;transition:max-height 0.4s ease,opacity 0.3s ease,padding 0.4s ease;">
         <div class="tag">../инициализация</div>
         <h2>Новый ран</h2>
       </div>
@@ -1791,9 +1790,18 @@ document.querySelectorAll('.char-input').forEach(input => {
   const nameInput = document.getElementById('char-name');
   const nickInput = document.getElementById('char-nick');
   function collapseGreeting() {
+    const header = document.getElementById('newrun-header');
+    if (header) {
+      const hh = header.offsetHeight;
+      header.style.maxHeight = hh + 'px';
+      header.offsetHeight;
+      header.style.maxHeight = '0';
+      header.style.opacity = '0';
+      header.style.padding = '0';
+    }
     const h = greeting.offsetHeight;
     greeting.style.maxHeight = h + 'px';
-    greeting.offsetHeight; // reflow
+    greeting.offsetHeight;
     greeting.style.maxHeight = '0';
     greeting.style.opacity = '0';
     greeting.style.pointerEvents = 'none';
