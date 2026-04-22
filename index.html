@@ -1803,7 +1803,7 @@ document.querySelectorAll('.char-input').forEach(input => {
   function setupGreetingObserver() {
     if (greetingObserver) greetingObserver.disconnect();
     greetingObserver = new IntersectionObserver((entries) => {
-      if (entries[0].intersectionRatio === 0) {
+      if (entries[0].intersectionRatio === 0 && body.scrollTop > 0) {
         collapseGreeting();
         greetingObserver.disconnect();
       }
