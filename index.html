@@ -1799,16 +1799,14 @@ document.querySelectorAll('.char-input').forEach(input => {
   }
 
   // Схлопнуть greeting когда пользователь проскроллил мимо него
-  let greetingObserver = null;
   function setupGreetingObserver() {
-    if (greetingObserver) greetingObserver.disconnect();
-    greetingObserver = new IntersectionObserver((entries) => {
-      if (entries[0].intersectionRatio === 0 && body.scrollTop > 0) {
+    function onScroll() {
+      if (body.scrollTop >= greeting.offsetHeight) {
         collapseGreeting();
-        greetingObserver.disconnect();
+        body.removeEventListener('scroll', onScroll);
       }
-    }, { root: body, threshold: 0 });
-    greetingObserver.observe(greeting);
+    }
+    body.addEventListener('scroll', onScroll);
   }
   setupGreetingObserver();
 
