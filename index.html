@@ -1798,13 +1798,26 @@ document.querySelectorAll('.char-input').forEach(input => {
     greeting.style.pointerEvents = 'none';
   }
 
+  // Схлопнуть greeting когда пользователь проскроллил мимо него
+  let greetingObserver = null;
+  function setupGreetingObserver() {
+    if (greetingObserver) greetingObserver.disconnect();
+    greetingObserver = new IntersectionObserver((entries) => {
+      if (entries[0].intersectionRatio === 0) {
+        collapseGreeting();
+        greetingObserver.disconnect();
+      }
+    }, { root: body, threshold: 0 });
+    greetingObserver.observe(greeting);
+  }
+  setupGreetingObserver();
+
   // Раскрытие пол+класс после заполнения имени и ника — с задержкой
   let revealTimer = null;
   function checkReveal() {
     if (nameInput.value.trim() && nickInput.value.trim()) {
       if (!formClass.classList.contains('revealed') && !revealTimer) {
         revealTimer = setTimeout(() => {
-          collapseGreeting();
           window.syncFormHeight?.();
           formClass.classList.add('revealed');
           body.scrollTop = 0;
@@ -1850,8 +1863,8 @@ document.querySelectorAll('.char-input').forEach(input => {
     greeting.style.maxHeight = '';
     greeting.style.opacity = '';
     greeting.style.pointerEvents = '';
-    greetingLocked = false;
     body.scrollTop = 0;
+    setupGreetingObserver();
   };
 })();
 
