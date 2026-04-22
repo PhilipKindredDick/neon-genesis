@@ -658,7 +658,6 @@
 
   /* Прогрессивное раскрытие формы */
   #form-identity { min-height: calc(42vh - 145px); margin-top: 8px; padding-top: 8px; }
-  #form-identity.compact { margin-top: 0; padding-top: 4px; border-top: none; }
 
   #newrun-greeting {
     overflow: hidden;
@@ -1797,7 +1796,6 @@ document.querySelectorAll('.char-input').forEach(input => {
     greeting.style.maxHeight = '0';
     greeting.style.opacity = '0';
     greeting.style.pointerEvents = 'none';
-    document.getElementById('form-identity').classList.add('compact');
   }
 
   // Схлопнуть greeting когда пользователь проскроллил мимо него
@@ -1863,7 +1861,6 @@ document.querySelectorAll('.char-input').forEach(input => {
     greeting.style.maxHeight = '';
     greeting.style.opacity = '';
     greeting.style.pointerEvents = '';
-    document.getElementById('form-identity').classList.remove('compact');
     body.scrollTop = 0;
     setupGreetingObserver();
   };
